@@ -1,4 +1,4 @@
-# EduReach — College Discovery Portal
+# EduExpert — College Discovery Portal
 
   ## Getting Started
 
@@ -35,5 +35,5 @@
   - `/news` — Latest updates
   - `/scholarships` — Scholarship finder
   - `/trends` — Trends 2026
-  - `/about` — About EduReach
+  - `/about` — About EduExpert
   

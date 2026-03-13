@@ -1,7 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, Menu, X, ChevronRight, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  ChevronRight,
+  Facebook,
+  GraduationCap,
+  Instagram,
+  Linkedin,
+  Menu,
+  Twitter,
+  X,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { CounsellingForm } from "@/components/counselling-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const NAV_LINKS = [
   { name: 'Courses', path: '/courses' },
@@ -16,7 +37,8 @@ const NAV_LINKS = [
 export function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  const [counsellingOpen, setCounsellingOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,7 +52,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMobileMenuOpen(false);
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (window.sessionStorage.getItem('eduexpert_counselling_modal_seen')) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setCounsellingOpen(true);
+      window.sessionStorage.setItem('eduexpert_counselling_modal_seen', 'true');
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -42,12 +81,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center text-white shadow-lg shadow-primary/30 group-hover:scale-105 transition-transform">
                 <GraduationCap className="w-6 h-6" />
               </div>
               <span className="font-display font-bold text-2xl tracking-tight text-foreground">
-                Edu<span className="text-accent">Tech</span>
+                Edu<span className="text-accent">Expert</span>
               </span>
             </Link>
 
@@ -56,15 +95,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.path}
-                  to={link.path}
+                  href={link.path}
                   className={`text-sm font-medium transition-colors hover:text-primary ${
-                    location.pathname === link.path ? 'text-primary' : 'text-muted-foreground'
+                    pathname === link.path ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
                   {link.name}
                 </Link>
               ))}
-              <button className="ml-4 px-6 py-2.5 rounded-full font-semibold bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5">
+              <button
+                onClick={() => setCounsellingOpen(true)}
+                className="ml-4 px-6 py-2.5 rounded-full font-semibold bg-foreground text-background hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5"
+              >
                 Get Free Counselling
               </button>
             </nav>
@@ -93,17 +135,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.path}
-                  to={link.path}
+                  href={link.path}
                   className={`text-xl font-display font-semibold p-4 rounded-xl transition-colors ${
-                    location.pathname === link.path
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-foreground hover:bg-muted'
+                    pathname === link.path
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted"
                   }`}
                 >
                   {link.name}
                 </Link>
               ))}
-              <button className="mt-4 w-full px-6 py-4 rounded-xl font-semibold bg-gradient-primary text-white shadow-lg">
+              <button
+                onClick={() => setCounsellingOpen(true)}
+                className="mt-4 w-full px-6 py-4 rounded-xl font-semibold bg-gradient-primary text-white shadow-lg"
+              >
                 Get Free Counselling
               </button>
             </nav>
@@ -115,16 +160,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
+      <Dialog open={counsellingOpen} onOpenChange={setCounsellingOpen}>
+        <DialogContent className="max-w-2xl rounded-[28px] border border-border/60 bg-white/85 p-0 shadow-2xl backdrop-blur-xl">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="font-display text-2xl">Free Counselling</DialogTitle>
+            <DialogDescription>
+              Tell us what you are targeting and we will help you shortlist the right college path.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-6">
+            <CounsellingForm
+              compact
+              title="Start your counselling request"
+              description="Your submission is saved locally in this browser so you do not lose progress."
+              onSuccess={() => setCounsellingOpen(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <footer className="bg-foreground text-background pt-16 pb-8 border-t border-border/10">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             <div className="space-y-4">
-              <Link to="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center text-white">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <span className="font-display font-bold text-xl tracking-tight text-white">
-                  Edu<span className="text-accent">Reach</span>
+                  Edu<span className="text-accent">Expert</span>
                 </span>
               </Link>
               <p className="text-muted/60 text-sm leading-relaxed">
@@ -144,7 +208,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-3">
                 {['Courses', 'Colleges', 'Admissions', 'Scholarships'].map((item) => (
                   <li key={item}>
-                    <Link to={`/${item.toLowerCase()}`} className="text-muted/60 hover:text-accent transition-colors text-sm flex items-center gap-2">
+                    <Link href={`/${item.toLowerCase()}`} className="text-muted/60 hover:text-accent transition-colors text-sm flex items-center gap-2">
                       <ChevronRight className="w-3 h-3" /> {item}
                     </Link>
                   </li>
@@ -158,7 +222,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 {['News', 'Trends 2026', 'About Us', 'Contact'].map((item) => (
                   <li key={item}>
                     <Link
-                      to={item === 'About Us' ? '/about' : item === 'Contact' ? '/about' : `/${item.toLowerCase().replace(' ', '-')}`}
+                      href={item === 'About Us' ? '/about' : item === 'Contact' ? '/about#contact-us' : `/${item.toLowerCase().replace(' ', '-')}`}
                       className="text-muted/60 hover:text-accent transition-colors text-sm flex items-center gap-2"
                     >
                       <ChevronRight className="w-3 h-3" /> {item}
@@ -184,7 +248,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-muted/60 text-sm">© 2026 EduReach Portal. All rights reserved.</p>
+            <p className="text-muted/60 text-sm">© 2026 EduExpert Portal. All rights reserved.</p>
             <div className="flex gap-6 text-sm text-muted/60">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

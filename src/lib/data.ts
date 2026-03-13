@@ -50,6 +50,25 @@ export interface College {
   campusSize: string;
 }
 
+export interface NewsArticleSection {
+  heading: string;
+  paragraphs: string[];
+}
+
+export interface NewsArticle {
+  id: number;
+  slug: string;
+  title: string;
+  date: string;
+  category: string;
+  image: string;
+  excerpt: string;
+  readTime: string;
+  featured?: boolean;
+  keyTakeaways: string[];
+  sections: NewsArticleSection[];
+}
+
 export const COURSES: Course[] = [
   {
     id: 1,
@@ -574,70 +593,229 @@ export const COLLEGES: College[] = [
   },
 ];
 
-export const NEWS = [
+export const NEWS: NewsArticle[] = [
   {
     id: 1,
+    slug: "jee-main-2026-session-1-results-declared",
     title: "JEE Main 2026 Session 1 Results Declared - Check Scorecard",
     date: "Mar 5, 2026",
     category: "Exams",
     image:
       "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&q=80",
+    excerpt:
+      "Candidates can now review scorecards, percentile breakdowns, and next-step timelines for Session 2 planning.",
+    readTime: "4 min read",
+    keyTakeaways: [
+      "Session 1 scorecards help students recalibrate Session 2 goals.",
+      "Percentile interpretation matters more than raw score alone.",
+      "Students should begin counselling prep and shortlist revisions immediately.",
+    ],
+    sections: [
+      {
+        heading: "What the result means",
+        paragraphs: [
+          "The Session 1 result gives students an early benchmark for how competitive their current preparation stands against the national pool.",
+          "For many students, this is less about final admission and more about identifying where improvement is possible before the next attempt.",
+        ],
+      },
+      {
+        heading: "What students should do next",
+        paragraphs: [
+          "Students targeting a higher percentile should analyse weak sections and set a more disciplined revision plan for Session 2.",
+          "Those already in a strong range should begin refining college targets, exam strategy, and backup options instead of waiting.",
+        ],
+      },
+    ],
   },
   {
     id: 2,
+    slug: "neet-2026-registration-opens",
     title: "NEET 2026 Registration Opens - Key Dates and Documents Required",
     date: "Mar 8, 2026",
     category: "Admissions",
     image:
       "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&q=80",
+    excerpt:
+      "The registration window has opened, and students should prioritise document accuracy and application review early.",
+    readTime: "5 min read",
+    featured: true,
+    keyTakeaways: [
+      "Application mistakes create avoidable stress later in the cycle.",
+      "Students should verify identity and category documents early.",
+      "NEET preparation plans should now align with exam-day execution.",
+    ],
+    sections: [
+      {
+        heading: "Application priorities",
+        paragraphs: [
+          "The first priority is not speed, but accuracy. Students should verify names, date of birth, category details, and uploaded documents before final submission.",
+          "Using the first few days of the registration window reduces the chance of rushed errors closer to the deadline.",
+        ],
+      },
+      {
+        heading: "Preparation alongside registration",
+        paragraphs: [
+          "Registration should be treated as an administrative checkpoint, not a pause in preparation.",
+          "At this stage, students should align revision calendars, mock practice, and time management with the exam timeline.",
+        ],
+      },
+    ],
   },
   {
     id: 3,
+    slug: "iit-bombay-launches-new-ai-ml-programme",
     title: "IIT Bombay Launches New AI and ML Programme for 2026 Batch",
     date: "Mar 1, 2026",
     category: "Colleges",
     image:
       "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&q=80",
+    excerpt:
+      "The new programme signals stronger specialised demand in AI-led engineering education at top institutes.",
+    readTime: "3 min read",
+    keyTakeaways: [
+      "AI-focused programmes are increasingly becoming core, not elective.",
+      "Students should compare curriculum depth, not just course labels.",
+      "Top institutes are formalising industry-facing AI pathways.",
+    ],
+    sections: [
+      {
+        heading: "Why this matters",
+        paragraphs: [
+          "New AI and ML programmes at top institutes indicate long-term institutional commitment to high-demand specialisations.",
+          "Students evaluating such programmes should compare faculty strength, labs, industry projects, and placement alignment instead of reacting to the headline alone.",
+        ],
+      },
+    ],
   },
   {
     id: 4,
+    slug: "cat-2025-toppers-share-their-preparation-strategy",
     title: "CAT 2025 Toppers Share Their Preparation Strategy",
     date: "Feb 28, 2026",
     category: "Success Stories",
     image:
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&q=80",
+    excerpt:
+      "The strongest preparation patterns were consistency, mock analysis, and section-wise discipline rather than volume alone.",
+    readTime: "4 min read",
+    keyTakeaways: [
+      "Mock analysis matters more than mock count.",
+      "A structured weekly review builds steady percentile improvement.",
+      "Students should prepare for interviews alongside exam goals.",
+    ],
+    sections: [
+      {
+        heading: "Patterns among toppers",
+        paragraphs: [
+          "The most repeatable pattern among high performers is disciplined review. Strong candidates use mocks to identify behavioural gaps, not just academic gaps.",
+          "Section timing, stress control, and decision-making under pressure usually separate top percentiles from the rest.",
+        ],
+      },
+    ],
   },
   {
     id: 5,
+    slug: "top-engineering-colleges-accepting-jee-main-score-2026",
     title: "Top Engineering Colleges Accepting JEE Main Score in 2026",
     date: "Mar 10, 2026",
     category: "Guide",
     image:
       "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&q=80",
+    excerpt:
+      "A useful shortlist is built by combining score range, fees, city, and branch preference, not rank alone.",
+    readTime: "6 min read",
+    keyTakeaways: [
+      "Branch preference should be weighed against institution strength.",
+      "Students need realistic, target, and aspirational buckets.",
+      "Fees and location can meaningfully change a shortlist.",
+    ],
+    sections: [
+      {
+        heading: "How to build the shortlist",
+        paragraphs: [
+          "A strong shortlist balances ambition with probability. Students should separate aspirational, realistic, and safer options instead of chasing only brand names.",
+          "Fee sensitivity, branch alignment, and city preference should be part of the shortlist from the beginning.",
+        ],
+      },
+    ],
   },
   {
     id: 6,
+    slug: "cuet-2026-what-students-should-finalise-before-applications",
     title: "CUET 2026: What Students Should Finalise Before Applications",
     date: "Mar 7, 2026",
     category: "Admissions",
     image:
       "https://images.unsplash.com/photo-1544531586-fde5298cdd40?w=500&q=80",
+    excerpt:
+      "Programme combinations, subject choices, and university targeting should be clarified before students submit forms.",
+    readTime: "5 min read",
+    keyTakeaways: [
+      "Subject combinations affect programme eligibility later.",
+      "Students should shortlist universities before form filling.",
+      "Application quality improves when decisions are made upfront.",
+    ],
+    sections: [
+      {
+        heading: "Before filling the form",
+        paragraphs: [
+          "Students should not approach CUET as a generic entrance form. Subject choices directly shape future programme eligibility and should be mapped carefully.",
+          "Shortlisting universities and likely programmes before submission reduces later confusion and mismatch.",
+        ],
+      },
+    ],
   },
   {
     id: 7,
+    slug: "pm-scholarship-applications-closing-soon",
     title: "Scholarship Alert: PM Scholarship Applications Closing Soon",
     date: "Mar 9, 2026",
     category: "Scholarships",
     image:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&q=80",
+    excerpt:
+      "Students eligible for the PM Scholarship should finalise documentation and submission immediately to avoid missing the window.",
+    readTime: "3 min read",
+    keyTakeaways: [
+      "Deadline-led scholarships need document readiness in advance.",
+      "Students should verify eligibility before uploading.",
+      "Counselling support can help if financial planning is part of college choice.",
+    ],
+    sections: [
+      {
+        heading: "Immediate action items",
+        paragraphs: [
+          "Students should verify eligibility criteria and complete document review before beginning final submission.",
+          "Where scholarships affect final college choice, financial planning should happen at the same time as academic shortlisting.",
+        ],
+      },
+    ],
   },
   {
     id: 8,
+    slug: "indias-education-sector-growth-and-digital-demand",
     title: "India's Education Sector Continues to Grow with Strong Digital Demand",
     date: "Mar 3, 2026",
     category: "Trends",
     image:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=80",
+    excerpt:
+      "Digital-first delivery, skills-led programmes, and employability pressure continue to reshape higher education expectations.",
+    readTime: "4 min read",
+    keyTakeaways: [
+      "Students increasingly compare employability, not just degree labels.",
+      "Hybrid learning and digital support systems are now expected.",
+      "Specialised programmes continue to gain demand over generic offerings.",
+    ],
+    sections: [
+      {
+        heading: "What students should infer",
+        paragraphs: [
+          "Sector growth does not mean every programme offers equal value. Students should evaluate outcomes, teaching format, and recruiter demand more carefully than before.",
+          "The strongest institutions are combining academic credibility with digital support, career services, and specialised pathways.",
+        ],
+      },
+    ],
   },
 ];
 
@@ -842,4 +1020,8 @@ export const STREAM_OPTIONS: Array<"All" | Stream> = [
 
 export function getCollegeBySlug(slug: string) {
   return COLLEGES.find((college) => college.slug === slug);
+}
+
+export function getNewsArticleBySlug(slug: string) {
+  return NEWS.find((article) => article.slug === slug);
 }
