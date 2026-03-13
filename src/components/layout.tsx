@@ -47,7 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <GraduationCap className="w-6 h-6" />
               </div>
               <span className="font-display font-bold text-2xl tracking-tight text-foreground">
-                Edu<span className="text-accent">Reach</span>
+                Edu<span className="text-accent">Tech</span>
               </span>
             </Link>
 
