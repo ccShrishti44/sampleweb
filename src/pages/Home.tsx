@@ -6,26 +6,7 @@ import {
   ArrowRight, CheckCircle2, Star, ChevronRight, Calendar, Sparkles,
 } from 'lucide-react';
 import { COLLEGES, COURSES, NEWS, SCHOLARSHIPS } from '@/lib/data';
-
-/* ─── Waves ─── */
-function WavesBackground() {
-  return (
-    <div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-[0]">
-      <svg className="relative block w-[calc(200%+1.3px)] h-[70px] md:h-[110px]"
-        xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
-        <defs>
-          <path id="hero-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18v44h-352z" />
-        </defs>
-        <g>
-          <use href="#hero-wave" x="48" y="0" className="wave-1" style={{ fill: 'hsl(243 75% 59% / 0.07)' }} />
-          <use href="#hero-wave" x="48" y="3" className="wave-2" style={{ fill: 'hsl(243 75% 59% / 0.05)' }} />
-          <use href="#hero-wave" x="48" y="5" className="wave-3" style={{ fill: 'hsl(24 95% 53% / 0.04)' }} />
-          <use href="#hero-wave" x="48" y="7" className="wave-4" style={{ fill: 'hsl(243 75% 59% / 0.03)' }} />
-        </g>
-      </svg>
-    </div>
-  );
-}
+import Waves from '@/components/ui/waves-background';
 
 /* ─── Animated stat counter ─── */
 function StatCounter({ to, suffix = '', prefix = '' }: { to: number; suffix?: string; prefix?: string }) {
@@ -484,12 +465,28 @@ export default function Home() {
 
       {/* ── HERO ── */}
       <section className="relative min-h-[92vh] flex flex-col justify-center overflow-hidden pb-0">
+        {/* Gradient base layer */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/70 via-white/90 to-white dark:from-indigo-950/40 dark:via-background dark:to-background" />
-          <div className="hero-dot-grid absolute inset-0 opacity-[0.03]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/70 via-white/60 to-white dark:from-indigo-950/40 dark:via-background dark:to-background" />
           <div className="absolute -top-32 -right-32 w-[700px] h-[700px] rounded-full bg-primary/10 blur-[140px] pointer-events-none" />
           <div className="absolute bottom-0 -left-20 w-[500px] h-[500px] rounded-full bg-accent/8 blur-[120px] pointer-events-none" />
         </div>
+
+        {/* Waves canvas layer — above gradient, below content */}
+        <Waves
+          lineColor="hsl(243 75% 59% / 0.18)"
+          backgroundColor="transparent"
+          waveSpeedX={0.012}
+          waveSpeedY={0.004}
+          waveAmpX={32}
+          waveAmpY={18}
+          xGap={12}
+          yGap={34}
+          friction={0.925}
+          tension={0.005}
+          maxCursorMove={80}
+          style={{ zIndex: 0 }}
+        />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center w-full pt-28 md:pt-36 pb-24">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
@@ -555,7 +552,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <WavesBackground />
+
       </section>
 
       {/* STATS MARQUEE */}
@@ -643,9 +640,12 @@ export default function Home() {
                       <span className="font-semibold text-foreground">{college.cutoff.split(' ')[0]}</span>
                     </div>
                   </div>
-                  <button className="w-full py-3 rounded-xl font-semibold border-2 border-border text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all">
+                  <Link
+                    to={`/colleges/${college.slug}`}
+                    className="flex w-full items-center justify-center py-3 rounded-xl font-semibold border-2 border-border text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all"
+                  >
                     View Details
-                  </button>
+                  </Link>
                 </div>
               </motion.div>
             ))}

@@ -14,6 +14,7 @@ import News from "@/pages/News";
 import Scholarships from "@/pages/Scholarships";
 import Trends from "@/pages/Trends";
 import About from "@/pages/About";
+import CollegeDetail from "@/pages/CollegeDetail";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/colleges" element={<Colleges />} />
+              <Route path="/colleges/:slug" element={<CollegeDetail />} />
               <Route path="/admissions" element={<Admissions />} />
               <Route path="/news" element={<News />} />
               <Route path="/scholarships" element={<Scholarships />} />

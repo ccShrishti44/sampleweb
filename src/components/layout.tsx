@@ -39,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           isScrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
@@ -111,12 +111,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 pt-20">
+      <main className="flex-1">
         {children}
       </main>
 
       <footer className="bg-foreground text-background pt-16 pb-8 border-t border-border/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             <div className="space-y-4">
               <Link to="/" className="flex items-center gap-2">
@@ -157,7 +157,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <ul className="space-y-3">
                 {['News', 'Trends 2026', 'About Us', 'Contact'].map((item) => (
                   <li key={item}>
-                    <Link to={`/${item.toLowerCase().replace(' ', '-')}`} className="text-muted/60 hover:text-accent transition-colors text-sm flex items-center gap-2">
+                    <Link
+                      to={item === 'About Us' ? '/about' : item === 'Contact' ? '/about' : `/${item.toLowerCase().replace(' ', '-')}`}
+                      className="text-muted/60 hover:text-accent transition-colors text-sm flex items-center gap-2"
+                    >
                       <ChevronRight className="w-3 h-3" /> {item}
                     </Link>
                   </li>
