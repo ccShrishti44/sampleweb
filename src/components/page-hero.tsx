@@ -175,7 +175,7 @@ export function PageHero({
         transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-20 md:py-24">
+      <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-20 md:py-18">
         <div className="grid gap-10 xl:grid-cols-[1.08fr_0.92fr] xl:items-end">
           <div>
             <span

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from "next/link";
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
-  Search, MapPin, BookOpen, Building2, Award, PlayCircle,
+  Search, MapPin, BookOpen, Building2, Award,
   ArrowRight, CheckCircle2, Star, Calendar, Sparkles,
 } from 'lucide-react';
 import {
@@ -12,6 +12,7 @@ import {
   getNewsArticles,
   getScholarships,
 } from "@/lib/services";
+import { EduScoreSection } from "@/components/home/eduscore-section";
 import Waves from '@/components/ui/waves-background';
 
 const COLLEGES = getColleges();
@@ -466,6 +467,78 @@ function CollegeMatchFinder() {
   );
 }
 
+/* ─── Stream Focus Scroller ─── */
+const STREAMS = [
+  { icon: '🚀', name: 'Engineering', count: '4,000+ Colleges', color: 'bg-blue-50 text-blue-600' },
+  { icon: '⚕️', name: 'Medical', count: '1,200+ Colleges', color: 'bg-emerald-50 text-emerald-600' },
+  { icon: '💼', name: 'Management', count: '5,000+ Colleges', color: 'bg-purple-50 text-purple-600' },
+  { icon: '⚖️', name: 'Law', count: '800+ Colleges', color: 'bg-orange-50 text-orange-600' },
+  { icon: '🎨', name: 'Design', count: '600+ Colleges', color: 'bg-pink-50 text-pink-600' },
+  { icon: '💻', name: 'IT & Software', count: '3,500+ Colleges', color: 'bg-cyan-50 text-cyan-600' },
+];
+
+function StreamFocusScroller() {
+  const [active, setActive] = useState(0);
+
+  const prev = () => setActive((p) => (p > 0 ? p - 1 : STREAMS.length - 1));
+  const next = () => setActive((p) => (p < STREAMS.length - 1 ? p + 1 : 0));
+
+  return (
+    <div className="relative w-full max-w-7xl mx-auto h-[240px] sm:h-[280px] flex items-center justify-center px-4">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {STREAMS.map((stream, idx) => {
+          let distance = ((idx - active) % STREAMS.length + STREAMS.length) % STREAMS.length;
+          if (distance > STREAMS.length / 2) distance -= STREAMS.length;
+
+          let xPercent = 0;
+          let scale = 1;
+          let blur = 0;
+          let opacity = 1;
+          let zIndex = 30;
+
+          if (distance === 0) {
+            xPercent = 0; scale = 1; blur = 0; opacity = 1; zIndex = 30;
+          } else if (distance === 1) {
+            xPercent = 110; scale = 0.85; blur = 2; opacity = 0.7; zIndex = 20;
+          } else if (distance === -1) {
+            xPercent = -110; scale = 0.85; blur = 2; opacity = 0.7; zIndex = 20;
+          } else if (distance === 2) {
+            xPercent = 200; scale = 0.7; blur = 4; opacity = 0.4; zIndex = 10;
+          } else if (distance === -2) {
+            xPercent = -200; scale = 0.7; blur = 4; opacity = 0.4; zIndex = 10;
+          } else {
+            xPercent = distance > 0 ? 250 : -250; scale = 0.5; blur = 6; opacity = 0; zIndex = 0;
+          }
+
+          return (
+            <motion.div
+              key={idx}
+              initial={false}
+              animate={{ x: `${xPercent}%`, scale, filter: `blur(${blur}px)`, opacity, zIndex }}
+              transition={{ type: "spring", stiffness: 260, damping: 25 }}
+              onClick={() => setActive(idx)}
+              className="absolute w-[220px] sm:w-[260px] bg-card border border-border shadow-xl rounded-[2rem] p-6 sm:p-8 text-center cursor-pointer pointer-events-auto will-change-transform group"
+            >
+              <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-5 group-hover:scale-110 transition-transform ${stream.color}`}>
+                {stream.icon}
+              </div>
+              <h3 className="font-bold text-foreground mb-2 text-base sm:text-lg">{stream.name}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">{stream.count}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <button onClick={prev} aria-label="Previous stream" className="absolute left-0 sm:-left-4 z-40 bg-background/90 hover:bg-muted backdrop-blur p-3 rounded-full shadow-md border border-border shrink-0 transition-colors text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <button onClick={next} aria-label="Next stream" className="absolute right-0 sm:-right-4 z-40 bg-background/90 hover:bg-muted backdrop-blur p-3 rounded-full shadow-md border border-border shrink-0 transition-colors text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
+         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  );
+}
+
 /* ─── Main Home Component ─── */
 export default function Home() {
   const [searchStream, setSearchStream] = useState('');
@@ -580,31 +653,13 @@ export default function Home() {
       </div>
 
       {/* STREAM COMPASS */}
-      <section className="py-24 bg-background">
+      <section className="py-24 bg-background overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Choose Your Path</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Not sure where to start? Explore top streams and find the perfect course.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {[
-              { icon: '🚀', name: 'Engineering', count: '4,000+ Colleges', color: 'bg-blue-50 text-blue-600' },
-              { icon: '⚕️', name: 'Medical', count: '1,200+ Colleges', color: 'bg-emerald-50 text-emerald-600' },
-              { icon: '💼', name: 'Management', count: '5,000+ Colleges', color: 'bg-purple-50 text-purple-600' },
-              { icon: '⚖️', name: 'Law', count: '800+ Colleges', color: 'bg-orange-50 text-orange-600' },
-              { icon: '🎨', name: 'Design', count: '600+ Colleges', color: 'bg-pink-50 text-pink-600' },
-              { icon: '💻', name: 'IT & Software', count: '3,500+ Colleges', color: 'bg-cyan-50 text-cyan-600' },
-            ].map((stream, idx) => (
-              <motion.div key={idx} whileHover={{ y: -5 }}
-                className="bg-card rounded-2xl p-6 border border-border text-center shadow-sm hover:shadow-xl transition-all cursor-pointer group">
-                <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform ${stream.color}`}>
-                  {stream.icon}
-                </div>
-                <h3 className="font-bold text-foreground mb-1">{stream.name}</h3>
-                <p className="text-xs text-muted-foreground">{stream.count}</p>
-              </motion.div>
-            ))}
-          </div>
+          <StreamFocusScroller />
         </div>
       </section>
 
@@ -663,54 +718,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* EDUSCORE */}
-      <section className="py-24 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">Discover Your <span className="text-gradient">EduScore</span></h2>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Stop guessing your chances. Our AI-driven EduScore analyzes your profile and predicts admission chances at top colleges with 95% accuracy.
-            </p>
-            <ul className="space-y-4 mb-8">
-              {['Personalized college recommendations', 'Cutoff predictions for 500+ exams', 'Fee and ROI analysis for your profile'].map((f, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="text-accent w-6 h-6 flex-shrink-0" />
-                  <span className="font-medium text-foreground">{f}</span>
-                </li>
-              ))}
-            </ul>
-            <button className="bg-gradient-primary text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:-translate-y-1 transition-all">
-              Calculate My EduScore
-            </button>
-          </div>
-          <div className="relative">
-            <div className="relative z-10 bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 shadow-2xl border border-gray-800 text-white transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
-              <div className="flex justify-between items-center mb-8">
-                <div>
-                  <h3 className="text-gray-400 text-sm font-medium mb-1">Your Profile Match</h3>
-                  <p className="font-display text-2xl font-bold">IIT Delhi</p>
-                </div>
-                <div className="w-16 h-16 rounded-full border-4 border-accent flex items-center justify-center">
-                  <span className="font-bold text-xl text-accent">92%</span>
-                </div>
-              </div>
-              <div className="space-y-4">
-                {[{ label: 'Academic Fit', pct: '85%', color: 'bg-emerald-500', text: 'High' }, { label: 'Cutoff Probability', pct: '95%', color: 'bg-accent', text: 'Very High' }].map(b => (
-                  <div key={b.label}>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-gray-400">{b.label}</span><span>{b.text}</span></div>
-                    <div className="w-full bg-gray-800 rounded-full h-2"><div className={`${b.color} h-2 rounded-full`} style={{ width: b.pct }} /></div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-8 pt-6 border-t border-gray-800 flex justify-between items-center">
-                <span className="text-sm text-gray-400">Based on JEE Main 2026 score</span>
-                <button className="text-sm font-semibold text-primary hover:text-white transition-colors">Update Profile →</button>
-              </div>
-            </div>
-            <div className="absolute top-10 right-10 w-full h-full bg-primary/20 rounded-3xl blur-3xl -z-10" />
-          </div>
-        </div>
-      </section>
+      <EduScoreSection />
 
       {/* ── FIND YOUR PERSONAL MATCH ── */}
       <CollegeMatchFinder />
@@ -771,7 +779,7 @@ export default function Home() {
       </section>
 
       {/* NEWS & SCHOLARSHIPS */}
-      <section className="py-24 bg-background">
+      <section className="py-10 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16">
           <div>
             <div className="flex justify-between items-center mb-8">
@@ -816,17 +824,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90 -z-10" />
-        <div className="max-w-4xl mx-auto px-4 text-center text-white relative z-10">
-          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">Ready to shape your future?</h2>
-          <p className="text-xl opacity-90 mb-10">Join 2 million+ students who found their dream college with EduExpert.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-white text-primary px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:-translate-y-1 transition-all">Sign Up for Free</button>
-            <button className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-              <PlayCircle className="w-6 h-6" /> Watch How it Works
-            </button>
+      <section className="py-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-[28px] border border-primary/12 bg-primary/[0.05] px-6 py-10 text-center shadow-sm sm:px-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/70">
+              Contact Us
+            </p>
+            <h2 className="mt-4 text-3xl font-display font-bold text-foreground sm:text-4xl">
+              Need help with shortlisting or counselling?
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base">
+              Reach out through our contact section and get direct guidance on courses, colleges, exams, and admissions.
+            </p>
+            <Link
+              href="/about#contact-us"
+              className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+            >
+              Contact Us
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -834,3 +850,4 @@ export default function Home() {
     </div>
   );
 }
+

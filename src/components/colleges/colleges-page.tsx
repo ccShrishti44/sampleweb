@@ -14,6 +14,8 @@ import {
   Star,
 } from "lucide-react";
 
+import { CollegeCompareBar } from "@/components/colleges/college-compare-bar";
+import { useCollegeCompare } from "@/components/colleges/use-college-compare";
 import { PageHero } from "@/components/page-hero";
 import { getColleges, getCollegeStreams } from "@/lib/services";
 
@@ -40,6 +42,7 @@ export default function Colleges({
   const [selectedStream, setSelectedStream] = useState(initialStream);
   const [selectedState, setSelectedState] = useState("All states");
   const [sortBy, setSortBy] = useState<SortValue>("rating");
+  const { isSelected, toggleCollege } = useCollegeCompare();
 
   useEffect(() => {
     setSelectedStream(initialStream);
@@ -183,6 +186,7 @@ export default function Colleges({
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
                 Use the college cards for quick comparison, then open the profile
                 page to review campus context, top programmes, and admissions fit.
+                You can add up to four colleges to compare side by side.
               </p>
             </div>
 
@@ -193,10 +197,10 @@ export default function Colleges({
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="overflow-hidden rounded-[28px] border border-border bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+                  className="overflow-hidden rounded-[24px] border border-border bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
                 >
-                  <div className="grid gap-0 xl:grid-cols-[240px_minmax(0,1.1fr)_320px]">
-                    <div className="relative h-60 xl:h-full">
+                  <div className="grid gap-0 xl:grid-cols-[180px_minmax(0,1fr)_240px]">
+                    <div className="relative h-40 xl:h-full">
                       <img
                         src={college.image}
                         alt={college.name}
@@ -211,7 +215,7 @@ export default function Colleges({
                         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
                           {college.category}
                         </p>
-                        <h3 className="mt-2 text-2xl font-display font-bold">
+                        <h3 className="mt-2 text-xl font-display font-bold">
                           {college.shortName}
                         </h3>
                         <p className="mt-2 flex items-center gap-2 text-sm text-white/80">
@@ -221,10 +225,10 @@ export default function Colleges({
                       </div>
                     </div>
 
-                    <div className="p-6 md:p-7">
+                    <div className="p-4 md:p-5">
                       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div>
-                          <h4 className="text-2xl font-display font-bold text-foreground">
+                          <h4 className="text-xl font-display font-bold text-foreground">
                             {college.name}
                           </h4>
                           <div className="mt-3 flex flex-wrap gap-2">
@@ -245,82 +249,46 @@ export default function Colleges({
                         </Link>
                       </div>
 
-                      <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                      <p className="mt-3 line-clamp-2 text-sm leading-6 text-muted-foreground">
                         {college.overview}
                       </p>
 
-                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-muted/40 p-4">
-                          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                            <Building2 className="h-4 w-4" />
-                            Fees
-                          </div>
-                          <p className="mt-2 text-sm font-semibold leading-6 text-foreground">
-                            {college.fees}
-                          </p>
-                        </div>
-                        <div className="rounded-2xl bg-muted/40 p-4">
-                          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                            <GraduationCap className="h-4 w-4" />
-                            Exams
-                          </div>
-                          <p className="mt-2 text-sm font-semibold leading-6 text-foreground">
-                            {college.examsAccepted.join(", ")}
-                          </p>
-                        </div>
-                        <div className="rounded-2xl bg-muted/40 p-4">
-                          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                            <ShieldCheck className="h-4 w-4" />
-                            Placement
-                          </div>
-                          <p className="mt-2 text-sm font-semibold leading-6 text-foreground">
-                            {college.placementRate}
-                          </p>
-                        </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-3 py-1.5 text-xs font-medium text-foreground">
+                          <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          {college.fees}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-3 py-1.5 text-xs font-medium text-foreground">
+                          <GraduationCap className="h-3.5 w-3.5 text-muted-foreground" />
+                          {college.examsAccepted[0]}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-3 py-1.5 text-xs font-medium text-foreground">
+                          <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />
+                          {college.placementRate}
+                        </span>
                       </div>
 
-                      <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_1fr]">
-                        <div>
-                          <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                            Top programmes
-                          </p>
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {college.topPrograms.map((program) => (
-                              <span
-                                key={program}
-                                className="rounded-full border border-border bg-white px-3 py-1 text-sm text-foreground"
-                              >
-                                {program}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                            Why students shortlist it
-                          </p>
-                          <ul className="mt-3 space-y-2">
-                            {college.highlights.map((highlight) => (
-                              <li
-                                key={highlight}
-                                className="flex items-start gap-2 text-sm leading-6 text-foreground"
-                              >
-                                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-accent" />
-                                <span>{highlight}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {college.topPrograms.slice(0, 2).map((program) => (
+                          <span
+                            key={program}
+                            className="rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-foreground"
+                          >
+                            {program}
+                          </span>
+                        ))}
+                        <span className="rounded-full border border-dashed border-border px-3 py-1 text-xs font-medium text-muted-foreground">
+                          {college.highlights[0]}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="border-t border-border bg-slate-50/80 p-6 xl:border-l xl:border-t-0">
+                    <div className="border-t border-border bg-slate-50/80 p-4 xl:border-l xl:border-t-0">
                       <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
                         Decision snapshot
                       </p>
-                      <div className="mt-4 space-y-3">
-                        <div className="rounded-2xl border border-border bg-white p-4">
+                      <div className="mt-3 space-y-3">
+                        <div className="rounded-2xl border border-border bg-white p-3.5">
                           <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
                             Median package
                           </p>
@@ -328,38 +296,43 @@ export default function Colleges({
                             {college.medianPackage}
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-border bg-white p-4">
+                        <div className="rounded-2xl border border-border bg-white p-3.5">
                           <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                            Hostel and living
+                            Cutoff route
                           </p>
                           <p className="mt-2 text-sm font-semibold text-foreground">
-                            {college.avgHostelFee}
+                            {college.cutoff}
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-border bg-white p-4">
+                        <div className="rounded-2xl border border-border bg-white p-3.5">
                           <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                            Campus scale
+                            Ownership
                           </p>
                           <p className="mt-2 text-sm font-semibold text-foreground">
-                            {college.campusSize}
+                            {college.ownership}
                           </p>
                         </div>
                       </div>
 
-                      <div className="mt-5 space-y-3">
+                      <div className="mt-4 space-y-2.5">
                         <Link
                           href={`/colleges/${college.slug}`}
-                          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-4 py-3 text-sm font-semibold text-background transition-colors hover:bg-primary"
+                          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-4 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-primary"
                         >
                           View full profile
                           <ArrowRight className="h-4 w-4" />
                         </Link>
-                        <Link
-                          href={`/colleges/${college.slug}`}
-                          className="flex w-full items-center justify-center rounded-2xl border border-border bg-white px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:border-foreground"
+                        <button
+                          type="button"
+                          onClick={() => toggleCollege(college.slug)}
+                          className={`flex w-full items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                            isSelected(college.slug)
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border bg-white text-foreground hover:border-foreground"
+                          }`}
                         >
-                          Compare details
-                        </Link>
+                          {isSelected(college.slug) ? "Added to compare" : "Add to compare"}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -391,6 +364,7 @@ export default function Colleges({
           </div>
         </div>
       </section>
+      <CollegeCompareBar />
     </div>
   );
 }

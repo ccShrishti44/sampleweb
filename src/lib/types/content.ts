@@ -20,6 +20,11 @@ export interface Course {
   eligibility: string;
   outcomes: string[];
   specialisations: string[];
+  entranceExams: string[];
+  curriculumAreas: string[];
+  topRoles: string[];
+  idealFor: string[];
+  admissionTips: string[];
   featuredCollegeSlugs: string[];
 }
 
@@ -48,6 +53,13 @@ export interface College {
   medianPackage: string;
   avgHostelFee: string;
   campusSize: string;
+}
+
+export interface CollegeCompareField {
+  key: string;
+  label: string;
+  type?: "text" | "list";
+  getValue: (college: College) => string | string[];
 }
 
 export interface NewsArticleSection {

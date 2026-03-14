@@ -5,9 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Briefcase,
   Building2,
-  CheckCircle2,
   Clock3,
   GraduationCap,
   Search,
@@ -155,127 +153,57 @@ export default function Courses() {
           </p>
         </div>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredCourses.map((course, index) => (
-            <motion.article
+            <motion.div
               key={course.id}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="rounded-[28px] border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+              transition={{ delay: index * 0.03 }}
             >
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <GraduationCap className="h-7 w-7" />
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <div className="flex flex-wrap gap-2">
-                        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
-                          {course.stream}
-                        </span>
-                        <span className="rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
-                          {course.level}
-                        </span>
-                      </div>
-                      <h3 className="mt-4 text-2xl font-display font-bold text-foreground">
-                        {course.name}
-                      </h3>
-                    </div>
-
-                    <Link
-                      href={`/colleges?stream=${encodeURIComponent(course.stream)}`}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-primary"
-                    >
-                      View colleges <ArrowRight className="h-4 w-4" />
-                    </Link>
+              <Link
+                href={`/courses/${course.slug}`}
+                className="group block rounded-2xl border border-border bg-white p-4 shadow-sm transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-md"
+              >
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <GraduationCap className="h-5 w-5" />
                   </div>
-
-                  <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                    {course.overview}
-                  </p>
-
-                  <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                    <div className="rounded-2xl bg-muted/40 p-4">
-                      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                        <Clock3 className="h-4 w-4" />
-                        Duration
-                      </div>
-                      <p className="mt-2 text-sm font-semibold text-foreground">
-                        {course.duration}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-muted/40 p-4">
-                      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                        <Briefcase className="h-4 w-4" />
-                        Salary Band
-                      </div>
-                      <p className="mt-2 text-sm font-semibold text-foreground">
-                        {course.avgSalary}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-muted/40 p-4">
-                      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                        <Building2 className="h-4 w-4" />
-                        Colleges
-                      </div>
-                      <p className="mt-2 text-sm font-semibold text-foreground">
-                        {course.collegesCount}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_0.95fr]">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                        Eligibility and format
-                      </p>
-                      <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                        {course.eligibility}
-                      </p>
-                      <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                        {course.learningFormat}
-                      </p>
-                    </div>
-
-                    <div className="rounded-2xl border border-border bg-slate-50 p-4">
-                      <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                        Best suited for
-                      </p>
-                      <ul className="mt-3 space-y-2">
-                        {course.outcomes.map((item) => (
-                          <li
-                            key={item}
-                            className="flex items-start gap-2 text-sm leading-6 text-foreground"
-                          >
-                            <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-accent" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 border-t border-border pt-5">
-                    <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                      Popular specialisations
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {course.specialisations.map((item) => (
-                        <span
-                          key={item}
-                          className="rounded-full bg-white px-3 py-1 text-sm text-foreground shadow-sm ring-1 ring-border"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex flex-col items-end gap-1">
+                     <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary-foreground">
+                      {course.stream}
+                    </span>
+                     <span className="rounded-full border border-border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {course.level}
+                    </span>
                   </div>
                 </div>
-              </div>
-            </motion.article>
+
+                <h3 className="text-base font-display font-bold leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-4">
+                  {course.name}
+                </h3>
+
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <div className="rounded-xl bg-muted/40 p-2.5 text-center">
+                    <Clock3 className="h-3.5 w-3.5 text-muted-foreground mx-auto mb-1" />
+                    <p className="text-xs font-semibold text-foreground">{course.duration}</p>
+                  </div>
+                  <div className="rounded-xl bg-muted/40 p-2.5 text-center">
+                    <Building2 className="h-3.5 w-3.5 text-muted-foreground mx-auto mb-1" />
+                    <p className="text-xs font-semibold text-foreground">{course.collegesCount}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-border pt-3">
+                  <span className="text-xs font-medium text-muted-foreground truncate max-w-[120px]">
+                    Exams: {course.entranceExams[0]}
+                  </span>
+                  <span className="flex items-center text-xs font-bold text-primary group-hover:translate-x-0.5 transition-transform">
+                    View <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </Link>
+            </motion.div>
           ))}
         </div>
 

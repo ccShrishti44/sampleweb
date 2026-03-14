@@ -161,18 +161,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       <Dialog open={counsellingOpen} onOpenChange={setCounsellingOpen}>
-        <DialogContent className="max-w-2xl rounded-[28px] border border-border/60 bg-white/85 p-0 shadow-2xl backdrop-blur-xl">
-          <DialogHeader className="px-6 pt-6">
-            <DialogTitle className="font-display text-2xl">Free Counselling</DialogTitle>
+        <DialogContent className="flex max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] max-w-2xl flex-col rounded-[28px] border border-border/60 bg-white/95 p-0 shadow-2xl backdrop-blur-xl sm:max-h-[85vh] sm:max-w-3xl">
+          <DialogHeader className="border-b border-border/60 px-5 py-5 sm:px-6 sm:py-6">
+            <DialogTitle className="font-display text-xl sm:text-2xl">Free Counselling</DialogTitle>
             <DialogDescription>
               Tell us what you are targeting and we will help you shortlist the right college path.
             </DialogDescription>
           </DialogHeader>
-          <div className="px-6 pb-6">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-6 sm:py-6">
             <CounsellingForm
               compact
-              title="Start your counselling request"
-              description="Your submission is saved locally in this browser so you do not lose progress."
+              embedded
               onSuccess={() => setCounsellingOpen(false)}
             />
           </div>

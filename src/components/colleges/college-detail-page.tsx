@@ -13,11 +13,14 @@ import {
   Star,
 } from "lucide-react";
 
+import { CollegeCompareBar } from "@/components/colleges/college-compare-bar";
+import { useCollegeCompare } from "@/components/colleges/use-college-compare";
 import { getCollegeBySlug, getCourses } from "@/lib/services";
 
 export default function CollegeDetail({ slug }: { slug: string }) {
   const college = getCollegeBySlug(slug);
   const COURSES = getCourses();
+  const { isSelected, toggleCollege } = useCollegeCompare();
 
   if (!college) return null;
 
@@ -100,6 +103,20 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                   </div>
                 ))}
               </div>
+
+              <div className="mt-5">
+                <button
+                  type="button"
+                  onClick={() => toggleCollege(college.slug)}
+                  className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+                    isSelected(college.slug)
+                      ? "bg-white text-slate-950"
+                      : "border border-white/15 bg-transparent text-white hover:bg-white/10"
+                  }`}
+                >
+                  {isSelected(college.slug) ? "Added to compare" : "Add to compare"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -124,23 +141,26 @@ export default function CollegeDetail({ slug }: { slug: string }) {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
           <div className="space-y-8">
             <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
               <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    Why this college stands out
+                    College overview
                   </p>
                   <h2 className="mt-2 text-3xl font-display font-bold text-foreground">
-                    Fast decision view
+                    What students should know first
                   </h2>
                 </div>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                  These are the signals users usually need before they go deeper:
-                  academic reputation, campus fit, admissions route, and outcome quality.
+                  This profile is structured for quick decision-making: academic fit, admissions route,
+                  cost, placement signal, and programme mix before deeper counselling steps.
                 </p>
               </div>
+              <p className="mt-5 text-sm leading-7 text-muted-foreground">
+                {college.overview}
+              </p>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 {college.highlights.map((highlight) => (
                   <div
@@ -158,23 +178,12 @@ export default function CollegeDetail({ slug }: { slug: string }) {
 
             <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Programme portfolio
+                Admission and academics
               </p>
               <h2 className="mt-2 text-3xl font-display font-bold text-foreground">
-                Popular academic options
+                Courses, exams, and access
               </h2>
-              <div className="mt-6 flex flex-wrap gap-3">
-                {college.topPrograms.map((program) => (
-                  <span
-                    key={program}
-                    className="rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-foreground shadow-sm"
-                  >
-                    {program}
-                  </span>
-                ))}
-              </div>
-
-              <div className="mt-8 grid gap-4 md:grid-cols-3">
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl bg-muted/40 p-4">
                   <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
                     <GraduationCap className="h-4 w-4" />
@@ -203,13 +212,65 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                   </p>
                 </div>
               </div>
+              <div className="mt-8 border-t border-border pt-6">
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Popular academic options
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {college.topPrograms.map((program) => (
+                    <span
+                      key={program}
+                      className="rounded-full border border-border bg-white px-4 py-2 text-sm font-medium text-foreground shadow-sm"
+                    >
+                      {program}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Placements and fees
+              </p>
+              <h2 className="mt-2 text-3xl font-display font-bold text-foreground">
+                Outcome and cost snapshot
+              </h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                {[
+                  ["Annual fee range", college.fees],
+                  ["Hostel fee", college.avgHostelFee],
+                  ["Median package", college.medianPackage],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-2xl border border-border bg-slate-50 p-4">
+                    <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                      {label}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold leading-6 text-foreground">
+                      {value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 rounded-2xl border border-border bg-white p-5">
+                <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                  Placement signal
+                </p>
+                <p className="mt-2 text-sm font-semibold text-foreground">
+                  {college.placementRate} placement rate
+                </p>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Use this with programme strength and fee context. A strong college decision should
+                  balance affordability, admission difficulty, and likely outcomes together.
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="space-y-8">
             <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Admissions snapshot
+                Quick compare sheet
               </p>
               <div className="mt-5 space-y-4">
                 {[
@@ -243,7 +304,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                 ))}
               </ul>
 
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="pt-5 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Related courses
               </p>
               <div className="mt-5 space-y-4">
@@ -267,6 +328,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
+      <CollegeCompareBar />
     </div>
   );
 }

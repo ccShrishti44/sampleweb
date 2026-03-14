@@ -7,3 +7,7 @@ export function getCourses() {
 export function getCourseStreams() {
   return STREAM_OPTIONS;
 }
+
+export function getCourseBySlug(slug: string) {
+  return COURSES.find((course) => course.slug === slug);
+}

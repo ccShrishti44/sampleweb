@@ -55,11 +55,13 @@ export function CounsellingForm({
   description = "Share your details and preferences so we can guide you toward the right college and course options.",
   onSuccess,
   compact = false,
+  embedded = false,
 }: {
   title?: string;
   description?: string;
   onSuccess?: () => void;
   compact?: boolean;
+  embedded?: boolean;
 }) {
   const [form, setForm] = useState<CounsellingFormData>(defaultForm);
 
@@ -104,14 +106,22 @@ export function CounsellingForm({
   }
 
   return (
-    <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
-      <div className="mb-6">
-        <h3 className="text-2xl font-display font-bold text-foreground">{title}</h3>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
-      </div>
+    <div
+      className={
+        embedded
+          ? ""
+          : `rounded-[28px] border border-border bg-white shadow-sm ${compact ? "p-4 sm:p-5" : "p-6"}`
+      }
+    >
+      {!embedded && (
+        <div className={compact ? "mb-4" : "mb-6"}>
+          <h3 className={`${compact ? "text-xl" : "text-2xl"} font-display font-bold text-foreground`}>{title}</h3>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className={`grid gap-4 ${compact ? "md:grid-cols-1" : "md:grid-cols-2"}`}>
+        <div className={`grid gap-3 ${compact ? "grid-cols-1" : "md:grid-cols-2"}`}>
           <label className="block">
             <span className="mb-2 block text-sm font-medium text-foreground">Full name</span>
             <input
@@ -188,7 +198,7 @@ export function CounsellingForm({
               className="w-full rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm outline-none focus:border-primary"
             />
           </label>
-          <label className="block md:col-span-2">
+          <label className={`block ${compact ? "" : "md:col-span-2"}`}>
             <span className="mb-2 block text-sm font-medium text-foreground">Budget range</span>
             <input
               value={form.budget}
@@ -197,10 +207,10 @@ export function CounsellingForm({
               className="w-full rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm outline-none focus:border-primary"
             />
           </label>
-          <label className="block md:col-span-2">
+          <label className={`block ${compact ? "" : "md:col-span-2"}`}>
             <span className="mb-2 block text-sm font-medium text-foreground">Message</span>
             <textarea
-              rows={4}
+              rows={compact ? 3 : 4}
               value={form.message}
               onChange={(event) => updateField("message", event.target.value)}
               placeholder="Tell us your goals, score expectations, or any concern."
