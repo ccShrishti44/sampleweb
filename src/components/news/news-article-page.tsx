@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React from "react";
 import Link from "next/link";
@@ -30,7 +31,7 @@ export default function NewsArticleDetail({ slug }: { slug: string }) {
           ["Category", article.category],
         ]}
       >
-        <img
+        <Image
           src={article.image}
           alt={article.title}
           className="h-44 w-full rounded-[28px] object-cover shadow-lg"

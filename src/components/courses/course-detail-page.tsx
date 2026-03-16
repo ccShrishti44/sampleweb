@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import Link from "next/link";
 import {
@@ -215,7 +216,7 @@ export default function CourseDetailPage({ slug }: { slug: string }) {
                   <Link key={college.slug} href={`/colleges/${college.slug}`} className="block group">
                     <div className="flex gap-3">
                       <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-border">
-                        <img src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                        <Image src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
                       </div>
                       <div>
                         <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">{college.name}</h4>

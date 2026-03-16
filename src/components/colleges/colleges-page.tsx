@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -204,7 +205,7 @@ export default function Colleges({
                 >
                   <div className="grid gap-0 xl:grid-cols-[180px_minmax(0,1fr)_240px]">
                     <div className="relative h-40 xl:h-full">
-                      <img
+                      <Image
                         src={college.image}
                         alt={college.name}
                         className="h-full w-full object-cover"

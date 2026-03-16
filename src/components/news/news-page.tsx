@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
@@ -46,7 +47,7 @@ export default function News() {
               href={`/news/${featuredArticle.slug}`}
               className="relative block rounded-3xl overflow-hidden mb-12 md:mb-16 h-[320px] sm:h-[400px] md:h-[500px] group"
             >
-              <img
+              <Image
                 src={featuredArticle.image}
                 alt={featuredArticle.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -102,7 +103,7 @@ export default function News() {
             >
               <Link href={`/news/${article.slug}`} className="flex h-full flex-col">
                 <div className="h-44 md:h-48 overflow-hidden relative">
-                  <img
+                  <Image
                     src={article.image}
                     alt={article.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from "next/link";
@@ -163,7 +164,7 @@ function CollegeMatchFinder() {
                           opacity: 1 - i * 0.18,
                         }}
                       >
-                        <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+                        <Image src={c.image} alt={c.name} className="w-full h-full object-cover" width={240} height={110} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                         <div className="absolute bottom-2.5 left-3 text-white">
                           <p className="font-bold text-sm leading-tight">{c.name}</p>
@@ -357,7 +358,7 @@ function CollegeMatchFinder() {
                         transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                         className="absolute inset-0"
                       >
-                        <img src={currentAnimCollege.image} alt={currentAnimCollege.name} className="w-full h-full object-cover" />
+                        <Image src={currentAnimCollege.image} alt={currentAnimCollege.name} className="w-full h-full object-cover" width={240} height={110} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
                           <p className="font-display font-extrabold text-xl leading-tight">{currentAnimCollege.name}</p>
@@ -404,7 +405,7 @@ function CollegeMatchFinder() {
 
                   <div className="bg-card border-2 border-primary/25 rounded-3xl overflow-hidden shadow-2xl shadow-primary/10">
                     <div className="relative h-52 overflow-hidden">
-                      <img src={matched.image} alt={matched.name} className="w-full h-full object-cover" />
+                      <Image src={matched.image} alt={matched.name} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                       <div className="absolute top-4 left-4 flex gap-2">
                         <span className="bg-white/90 backdrop-blur text-black text-xs font-bold px-3 py-1 rounded-full">{matched.rank}</span>
@@ -528,7 +529,7 @@ function StreamFocusScroller() {
               className="absolute w-[200px] sm:w-[260px] h-[220px] sm:h-[260px] rounded-2xl overflow-hidden shadow-xl border border-border cursor-pointer pointer-events-auto will-change-transform group"
             >
               <div className="relative h-full w-full">
-                <img
+                <Image
                   src={stream.image}
                   alt={stream.name}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -616,7 +617,7 @@ export default function Home() {
             className="flex items-center justify-center gap-3 mb-10">
             <div className="flex -space-x-2.5">
               {['https://i.pravatar.cc/32?img=1','https://i.pravatar.cc/32?img=5','https://i.pravatar.cc/32?img=9','https://i.pravatar.cc/32?img=12','https://i.pravatar.cc/32?img=15'].map((src, i) => (
-                <img key={i} src={src} alt="student" className="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" />
+                <Image key={i} src={src} alt="student" className="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" width={32} height={32} />
               ))}
             </div>
             <div className="text-sm text-muted-foreground">
@@ -703,7 +704,7 @@ export default function Home() {
                 className="min-w-[280px] max-w-[280px] md:min-w-[320px] md:max-w-[320px] snap-center bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-2xl transition-all group">
                 <div className="relative h-44 md:h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-                  <img src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <Image src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" width={240} height={110} />
                   <div className="absolute top-4 left-4 z-20">
                     <span className="bg-white text-black text-xs font-bold px-3 py-1 rounded-full">{college.rank}</span>
                   </div>
@@ -787,7 +788,7 @@ export default function Home() {
                 <div className="flex text-accent text-sm mb-3">{'★'.repeat(t.stars)}</div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-5 italic">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
-                  <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover border-2 border-border" />
+                  <Image src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full object-cover border-2 border-border" width={40} height={40} />
                   <div>
                     <p className="font-bold text-sm text-foreground">{t.name}</p>
                     <p className="text-xs text-muted-foreground">{t.college}</p>
@@ -812,7 +813,7 @@ export default function Home() {
                 <div key={article.id} className="group">
                   <Link href={`/news/${article.slug}`} className="flex gap-4">
                     <div className="w-24 h-20 md:w-32 md:h-24 rounded-xl overflow-hidden flex-shrink-0">
-                      <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                      <Image src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" width={48} height={40} />
                     </div>
                     <div>
                     <span className="text-xs font-bold text-accent mb-1 block">{article.category}</span>

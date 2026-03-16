@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React from "react";
 import { motion } from "framer-motion";
@@ -148,7 +149,7 @@ export default function About() {
                 className="bg-card rounded-3xl overflow-hidden border border-border hover:shadow-xl transition-shadow group text-center max-w-[280px] sm:max-w-none mx-auto w-full"
               >
                 <div className="h-48 sm:h-56 overflow-hidden">
-                  <img src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Image src={member.img} alt={member.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={240} height={110} />
                 </div>
                 <div className="p-5">
                   <h3 className="text-xl font-bold mb-1">{member.name}</h3>

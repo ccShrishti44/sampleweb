@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight, CheckCircle2, Scale } from "lucide-react";
 
 import { PageHero } from "@/components/page-hero";
@@ -101,7 +102,7 @@ export default function CollegeComparePage({
               className="overflow-hidden rounded-[28px] border border-border bg-white shadow-sm"
             >
               <div className="relative h-40">
-                <img
+                <Image
                   src={college.image}
                   alt={college.name}
                   className="h-full w-full object-cover"

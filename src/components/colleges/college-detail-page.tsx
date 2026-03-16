@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import React from "react";
 import Link from "next/link";
@@ -71,7 +72,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_18%,#ffffff_100%)] pb-24">
       <section className="relative overflow-hidden border-b border-border bg-slate-950 text-white">
-        <img
+        <Image
           src={college.bannerImage}
           alt={college.name}
           className="absolute inset-0 h-full w-full object-cover opacity-20"
@@ -318,7 +319,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                     key={image.src}
                     className="overflow-hidden rounded-[24px] border border-border bg-slate-50"
                   >
-                    <img
+                    <Image
                       src={image.src}
                       alt={image.alt}
                       className="h-52 w-full object-cover"
