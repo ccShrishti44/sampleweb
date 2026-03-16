@@ -10,6 +10,7 @@ export interface Course {
   id: number;
   slug: string;
   name: string;
+  fullName: string;
   level: "Undergraduate" | "Postgraduate" | "Integrated";
   stream: Stream;
   duration: string;
@@ -26,6 +27,22 @@ export interface Course {
   idealFor: string[];
   admissionTips: string[];
   featuredCollegeSlugs: string[];
+}
+
+export interface AcademicStreamPage {
+  slug: string;
+  name: string;
+  shortDescription: string;
+  overview: string;
+  image: string;
+  collegeCount: string;
+  topExams: string[];
+  degreeTypes: string[];
+  whoShouldConsider: string[];
+  keyFocusAreas: string[];
+  careerDirections: string[];
+  relatedCourseSlugs: string[];
+  collegeFilterStream?: Stream;
 }
 
 export interface College {
@@ -53,6 +70,26 @@ export interface College {
   medianPackage: string;
   avgHostelFee: string;
   campusSize: string;
+}
+
+export interface CollegeExperienceImage {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
+export interface CollegeStudentVoice {
+  name: string;
+  programme: string;
+  role: string;
+  package: string;
+  quote: string;
+}
+
+export interface CollegeProfile extends College {
+  bannerImage: string;
+  experienceGallery: CollegeExperienceImage[];
+  studentVoices: CollegeStudentVoice[];
 }
 
 export interface CollegeCompareField {
@@ -110,4 +147,10 @@ export interface ExamTimelineItem {
   status: string;
   date: string;
   color: string;
+}
+
+export interface PersonalizedTimelineInput {
+  examYear: string;
+  stream: Stream | "";
+  statePreference?: string;
 }

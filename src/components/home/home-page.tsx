@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Search, MapPin, BookOpen, Building2, Award,
@@ -11,6 +12,7 @@ import {
   getColleges,
   getNewsArticles,
   getScholarships,
+  getStreamPages,
 } from "@/lib/services";
 import { EduScoreSection } from "@/components/home/eduscore-section";
 import Waves from '@/components/ui/waves-background';
@@ -468,23 +470,23 @@ function CollegeMatchFinder() {
 }
 
 /* ─── Stream Focus Scroller ─── */
-const STREAMS = [
-  { icon: '🚀', name: 'Engineering', count: '4,000+ Colleges', color: 'bg-blue-50 text-blue-600' },
-  { icon: '⚕️', name: 'Medical', count: '1,200+ Colleges', color: 'bg-emerald-50 text-emerald-600' },
-  { icon: '💼', name: 'Management', count: '5,000+ Colleges', color: 'bg-purple-50 text-purple-600' },
-  { icon: '⚖️', name: 'Law', count: '800+ Colleges', color: 'bg-orange-50 text-orange-600' },
-  { icon: '🎨', name: 'Design', count: '600+ Colleges', color: 'bg-pink-50 text-pink-600' },
-  { icon: '💻', name: 'IT & Software', count: '3,500+ Colleges', color: 'bg-cyan-50 text-cyan-600' },
-];
+const STREAMS = getStreamPages().map((streamPage) => ({
+  slug: streamPage.slug,
+  name: streamPage.name,
+  count: streamPage.collegeCount,
+  image: streamPage.image,
+  shortDescription: streamPage.shortDescription,
+}));
 
 function StreamFocusScroller() {
   const [active, setActive] = useState(0);
+  const router = useRouter();
 
   const prev = () => setActive((p) => (p > 0 ? p - 1 : STREAMS.length - 1));
   const next = () => setActive((p) => (p < STREAMS.length - 1 ? p + 1 : 0));
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto h-[240px] sm:h-[280px] flex items-center justify-center px-4">
+    <div className="relative w-full max-w-7xl mx-auto h-[220px] sm:h-[280px] flex items-center justify-center px-4">
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {STREAMS.map((stream, idx) => {
           let distance = ((idx - active) % STREAMS.length + STREAMS.length) % STREAMS.length;
@@ -512,18 +514,39 @@ function StreamFocusScroller() {
 
           return (
             <motion.div
-              key={idx}
+              key={stream.slug}
               initial={false}
               animate={{ x: `${xPercent}%`, scale, filter: `blur(${blur}px)`, opacity, zIndex }}
               transition={{ type: "spring", stiffness: 260, damping: 25 }}
-              onClick={() => setActive(idx)}
-              className="absolute w-[220px] sm:w-[260px] bg-card border border-border shadow-xl rounded-[2rem] p-6 sm:p-8 text-center cursor-pointer pointer-events-auto will-change-transform group"
+              onClick={() => {
+                if (distance === 0) {
+                  router.push(`/streams/${stream.slug}`);
+                  return;
+                }
+                setActive(idx);
+              }}
+              className="absolute w-[200px] sm:w-[260px] h-[220px] sm:h-[260px] rounded-2xl overflow-hidden shadow-xl border border-border cursor-pointer pointer-events-auto will-change-transform group"
             >
-              <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full flex items-center justify-center text-4xl mb-5 group-hover:scale-110 transition-transform ${stream.color}`}>
-                {stream.icon}
+              <div className="relative h-full w-full">
+                <img
+                  src={stream.image}
+                  alt={stream.name}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 transition-opacity duration-500 group-hover:opacity-100 opacity-80" />
               </div>
-              <h3 className="font-bold text-foreground mb-2 text-base sm:text-lg">{stream.name}</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">{stream.count}</p>
+
+              <div className="absolute inset-0 p-6 flex flex-col items-center justify-end z-10 text-white">
+                <h3 className="font-display font-bold text-2xl mb-2.5 drop-shadow-lg tracking-tight">
+                  {stream.name}
+                </h3>
+                <p className="mb-3 text-center text-xs leading-5 text-white/80">
+                  {stream.shortDescription}
+                </p>
+                <div className="text-xs font-semibold text-white/95 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md">
+                  {stream.count}
+                </div>
+              </div>
             </motion.div>
           );
         })}
@@ -652,19 +675,18 @@ export default function Home() {
         </div>
       </div>
 
-      {/* STREAM COMPASS */}
-      <section className="py-24 bg-background overflow-hidden relative">
+      <section className="py-16 md:py-24 bg-background overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Choose Your Path</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Not sure where to start? Explore top streams and find the perfect course.</p>
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Where Do You Imagine Yourself?</h2>
+            <h3 className="text-muted-foreground max-w-2xl mx-auto">Which among the below closely aligns with your dream picture.</h3>
           </div>
           <StreamFocusScroller />
         </div>
       </section>
 
       {/* FEATURED COLLEGES */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-16 md:py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
@@ -678,8 +700,8 @@ export default function Home() {
           <div className="flex overflow-x-auto pb-12 -mx-4 px-4 snap-x gap-6 hide-scrollbar">
             {COLLEGES.slice(0, 5).map(college => (
               <motion.div key={college.id} whileHover={{ y: -10 }}
-                className="min-w-[320px] max-w-[320px] snap-center bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-2xl transition-all group">
-                <div className="relative h-48 overflow-hidden">
+                className="min-w-[280px] max-w-[280px] md:min-w-[320px] md:max-w-[320px] snap-center bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-2xl transition-all group">
+                <div className="relative h-44 md:h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
                   <img src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute top-4 left-4 z-20">
@@ -690,7 +712,7 @@ export default function Home() {
                     <p className="text-sm flex items-center gap-1 opacity-90"><MapPin className="w-3 h-3" /> {college.city}</p>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-5 md:p-6">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">{college.category}</span>
                     <span className="flex items-center gap-1 text-sm font-bold"><Star className="w-4 h-4 fill-accent text-accent" /> {college.rating}</span>
@@ -723,8 +745,7 @@ export default function Home() {
       {/* ── FIND YOUR PERSONAL MATCH ── */}
       <CollegeMatchFinder />
 
-      {/* ── BY THE NUMBERS (replaces Exam Calendar) ── */}
-      <section className="py-24 bg-muted/30">
+      <section className="py-16 md:py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Trusted Across India</h2>
@@ -742,9 +763,9 @@ export default function Home() {
               <motion.div key={i}
                 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                className={`rounded-2xl border p-6 text-center ${s.color}`}>
-                <div className="text-4xl mb-2">{s.icon}</div>
-                <div className="text-3xl md:text-4xl font-display font-extrabold mb-1">
+                className={`rounded-2xl border p-5 md:p-6 text-center ${s.color}`}>
+                <div className="text-3xl md:text-4xl mb-2">{s.icon}</div>
+                <div className="text-2xl md:text-4xl font-display font-extrabold mb-1">
                   <StatCounter to={s.to} suffix={s.suffix} prefix={s.prefix} />
                 </div>
                 <p className="text-sm font-semibold opacity-75">{s.label}</p>
@@ -762,7 +783,7 @@ export default function Home() {
               <motion.div key={i}
                 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+                className="bg-card border border-border rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-lg transition-shadow">
                 <div className="flex text-accent text-sm mb-3">{'★'.repeat(t.stars)}</div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-5 italic">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3">
@@ -779,36 +800,38 @@ export default function Home() {
       </section>
 
       {/* NEWS & SCHOLARSHIPS */}
-      <section className="py-10 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16">
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 md:gap-16">
           <div>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6 md:mb-8">
               <h2 className="text-3xl font-display font-bold">Latest Updates</h2>
               <Link href="/news" className="text-primary font-semibold hover:underline">See All</Link>
             </div>
             <div className="space-y-6">
               {NEWS.slice(0, 3).map(article => (
-                <Link href="/news" key={article.id} className="flex gap-4 group">
-                  <div className="w-32 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                    <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-                  </div>
-                  <div>
+                <div key={article.id} className="group">
+                  <Link href={`/news/${article.slug}`} className="flex gap-4">
+                    <div className="w-24 h-20 md:w-32 md:h-24 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                    <div>
                     <span className="text-xs font-bold text-accent mb-1 block">{article.category}</span>
                     <h3 className="font-bold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">{article.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-2">{article.date}</p>
+                    <p className="text-xs text-muted-foreground mt-1 md:mt-2">{article.date}</p>
                   </div>
-                </Link>
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
           <div>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mt-12 lg:mt-0 mb-6 md:mb-8">
               <h2 className="text-3xl font-display font-bold">Top Scholarships</h2>
               <Link href="/scholarships" className="text-primary font-semibold hover:underline">See All</Link>
             </div>
             <div className="space-y-4">
               {SCHOLARSHIPS.slice(0, 4).map(s => (
-                <div key={s.id} className="bg-muted/50 p-5 rounded-2xl border border-border/50 hover:bg-white dark:hover:bg-gray-900 hover:shadow-lg transition-all group cursor-pointer">
+                <div key={s.id} className="bg-muted/50 p-4 md:p-5 rounded-2xl border border-border/50 hover:bg-white dark:hover:bg-gray-900 hover:shadow-lg transition-all group cursor-pointer">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{s.name}</h3>
                     <span className="font-bold text-accent whitespace-nowrap ml-4">{s.amount}</span>
@@ -824,7 +847,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-10">
+      <section className="py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-[28px] border border-primary/12 bg-primary/[0.05] px-6 py-10 text-center shadow-sm sm:px-10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary/70">

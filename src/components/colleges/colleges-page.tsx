@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -43,6 +44,7 @@ export default function Colleges({
   const [selectedState, setSelectedState] = useState("All states");
   const [sortBy, setSortBy] = useState<SortValue>("rating");
   const { isSelected, toggleCollege } = useCollegeCompare();
+  const router = useRouter();
 
   useEffect(() => {
     setSelectedStream(initialStream);
@@ -194,10 +196,11 @@ export default function Colleges({
               {filteredColleges.map((college, index) => (
                 <motion.article
                   key={college.id}
+                  onClick={() => router.push(`/colleges/${college.slug}`)}
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="overflow-hidden rounded-[24px] border border-border bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+                  className="overflow-hidden rounded-[24px] border border-border bg-white shadow-sm transition-all hover:-translate-y-1 hover:cursor-pointer hover:shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
                 >
                   <div className="grid gap-0 xl:grid-cols-[180px_minmax(0,1fr)_240px]">
                     <div className="relative h-40 xl:h-full">
@@ -228,7 +231,7 @@ export default function Colleges({
                     <div className="p-4 md:p-5">
                       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div>
-                          <h4 className="text-xl font-display font-bold text-foreground">
+                          <h4 className="text-xl font-display font-bold text-foreground group-hover:text-primary transition-colors">
                             {college.name}
                           </h4>
                           <div className="mt-3 flex flex-wrap gap-2">
@@ -243,6 +246,7 @@ export default function Colleges({
 
                         <Link
                           href={`/colleges/${college.slug}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="inline-flex items-center gap-2 text-sm font-semibold text-primary"
                         >
                           Open profile <ArrowRight className="h-4 w-4" />
@@ -317,6 +321,7 @@ export default function Colleges({
                       <div className="mt-4 space-y-2.5">
                         <Link
                           href={`/colleges/${college.slug}`}
+                          onClick={(e) => e.stopPropagation()}
                           className="flex w-full items-center justify-center gap-2 rounded-2xl bg-foreground px-4 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-primary"
                         >
                           View full profile
@@ -324,7 +329,10 @@ export default function Colleges({
                         </Link>
                         <button
                           type="button"
-                          onClick={() => toggleCollege(college.slug)}
+                          onClick={(e) => {
+                             e.stopPropagation();
+                             toggleCollege(college.slug);
+                          }}
                           className={`flex w-full items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-colors ${
                             isSelected(college.slug)
                               ? "border-foreground bg-foreground text-background"

@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { getDeadlineEvents, getExamTimeline } from "@/lib/services";
-import type { DeadlineEvent, DeadlineEventType } from "@/lib/types/content";
+import { getDeadlineEvents, getExamTimeline, getPersonalizedExamTimeline } from "@/lib/services";
+import type { DeadlineEvent, DeadlineEventType, ExamTimelineItem, Stream } from "@/lib/types/content";
 import { Calendar, FileText, CheckSquare, Users, BookOpen, MessageCircleQuestion, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHero } from '@/components/page-hero';
@@ -270,6 +270,12 @@ function DeadlineCalendar() {
    ADMISSIONS PAGE
 ───────────────────────────────────────────── */
 export default function Admissions() {
+  const [timelineYear, setTimelineYear] = useState("2026");
+  const [timelineStream, setTimelineStream] = useState<Stream | "">("");
+  const [timelineState, setTimelineState] = useState("");
+  const [personalizedTimeline, setPersonalizedTimeline] = useState<ExamTimelineItem[]>([]);
+  const [showTimeline, setShowTimeline] = useState(false);
+
   useEffect(() => {
     if (window.location.hash === "#deadline-calendar") {
       setTimeout(() => {
@@ -289,6 +295,16 @@ export default function Admissions() {
     { icon: <Users />, title: "Counseling & Interview", desc: "Participate in centralized counseling (JoSAA, MCC) or university specific GD/PI." },
     { icon: <MessageCircleQuestion />, title: "Final Admission", desc: "Pay the admission fee, verify physical documents, and secure your seat." },
   ];
+
+  function handleTimelineCheck() {
+    const results = getPersonalizedExamTimeline({
+      examYear: timelineYear,
+      stream: timelineStream,
+      statePreference: timelineState.trim(),
+    });
+
+    setPersonalizedTimeline(results.length ? results : EXAM_TIMELINE);
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -398,23 +414,100 @@ export default function Admissions() {
               <h3 className="font-display font-bold text-xl mb-6 flex items-center gap-2">
                 <Calendar className="text-primary" /> 2026 Exam Timeline
               </h3>
-              <div className="space-y-6">
-                {EXAM_TIMELINE.map((item, idx) => (
-                  <div key={idx} className="relative pl-6 before:absolute before:left-0 before:top-2 before:w-2 before:h-2 before:bg-primary before:rounded-full before:ring-4 before:ring-primary/20">
-                    <h4 className="font-bold text-sm text-foreground">{item.exam}</h4>
-                    <p className="text-xs text-muted-foreground mt-1">{item.date}</p>
-                    <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold ${item.color}`}>
-                      {item.status}
-                    </span>
-                    {idx !== EXAM_TIMELINE.length - 1 && (
-                      <div className="absolute left-[3px] top-6 bottom-[-16px] w-[2px] bg-border" />
-                    )}
+              
+              {!showTimeline ? (
+                <div className="flex flex-col items-center justify-center p-8 text-center bg-muted/20 border border-border rounded-2xl">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                    <Calendar className="w-8 h-8" />
                   </div>
-                ))}
-              </div>
-              <button className="w-full mt-8 py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors">
-                Set Alerts
-              </button>
+                  <h4 className="font-bold text-foreground mb-2">Want a personalized timeline?</h4>
+                  <p className="text-sm text-muted-foreground mb-6">Track exam dates, application windows, and counselling schedules specific to your stream and state.</p>
+                  <button
+                    onClick={() => setShowTimeline(true)}
+                    className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg transition-all"
+                  >
+                    Check Your Timeline
+                  </button>
+                </div>
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }} 
+                  animate={{ opacity: 1, height: 'auto' }} 
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="space-y-4 rounded-2xl border border-border bg-muted/30 p-4 mb-6">
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        Exam year
+                      </label>
+                      <select
+                        value={timelineYear}
+                        onChange={(event) => setTimelineYear(event.target.value)}
+                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+                      >
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        Stream
+                      </label>
+                      <select
+                        value={timelineStream}
+                        onChange={(event) => setTimelineStream(event.target.value as Stream | "")}
+                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+                      >
+                        <option value="">Select stream</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Medical">Medical</option>
+                        <option value="Management">Management</option>
+                        <option value="Law">Law</option>
+                        <option value="Design">Design</option>
+                        <option value="Science">Science</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        State preference
+                      </label>
+                      <input
+                        type="text"
+                        value={timelineState}
+                        onChange={(event) => setTimelineState(event.target.value)}
+                        placeholder="Optional, e.g. Maharashtra"
+                        className="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleTimelineCheck}
+                      className="w-full rounded-xl bg-foreground px-4 py-3 text-sm font-bold text-background transition-colors hover:bg-primary"
+                    >
+                      Update Timeline
+                    </button>
+                  </div>
+
+                  {personalizedTimeline.length > 0 && (
+                    <div className="space-y-6 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar rounded-xl">
+                      {personalizedTimeline.map((item, idx) => (
+                        <div key={idx} className="relative pl-6 before:absolute before:left-0 before:top-2 before:w-2 before:h-2 before:bg-primary before:rounded-full before:ring-4 before:ring-primary/20">
+                          <h4 className="font-bold text-sm text-foreground">{item.exam}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{item.date}</p>
+                          <span className={`inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold ${item.color}`}>
+                            {item.status}
+                          </span>
+                          {idx !== personalizedTimeline.length - 1 && (
+                            <div className="absolute left-[3px] top-6 bottom-[-16px] w-[2px] bg-border" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </div>
           </div>
 

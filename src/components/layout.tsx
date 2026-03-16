@@ -4,16 +4,20 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BookOpen,
   ChevronRight,
   Facebook,
   GraduationCap,
+  Info,
   Instagram,
   Linkedin,
-  Menu,
+  Newspaper,
+  ReceiptText,
+  School,
+  Sparkles,
+  Trophy,
   Twitter,
-  X,
 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 
 import { CounsellingForm } from "@/components/counselling-form";
 import {
@@ -34,10 +38,22 @@ const NAV_LINKS = [
   { name: 'About Us', path: '/about' },
 ];
 
+const MOBILE_NAV_LINKS = [
+  { name: "Courses", path: "/courses", icon: BookOpen },
+  { name: "Colleges", path: "/colleges", icon: School },
+  { name: "Admissions", path: "/admissions", icon: ReceiptText },
+  { name: "News", path: "/news", icon: Newspaper },
+  { name: "Scholarships", path: "/scholarships", icon: Trophy },
+  { name: "Trends", path: "/trends-2026", icon: Sparkles },
+  { name: "About", path: "/about", icon: Info },
+];
+
+const NEWSLETTER_STORAGE_KEY = "eduexpert_newsletter_signups";
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [counsellingOpen, setCounsellingOpen] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState("");
   const pathname = usePathname();
 
   useEffect(() => {
@@ -48,9 +64,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -70,6 +84,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     return () => window.clearTimeout(timer);
   }, []);
+
+  function handleNewsletterSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const email = newsletterEmail.trim().toLowerCase();
+    if (!email) {
+      window.alert("Enter a valid email address.");
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      const existing = window.localStorage.getItem(NEWSLETTER_STORAGE_KEY);
+      const parsed = existing ? (JSON.parse(existing) as string[]) : [];
+
+      if (!parsed.includes(email)) {
+        parsed.unshift(email);
+        window.localStorage.setItem(NEWSLETTER_STORAGE_KEY, JSON.stringify(parsed));
+      }
+    }
+
+    setNewsletterEmail("");
+    window.alert("You have been registered for newsletter updates.");
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -111,54 +148,50 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </button>
             </nav>
 
-            {/* Mobile Menu Toggle */}
             <button
-              className="lg:hidden text-foreground p-2"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => setCounsellingOpen(true)}
+              className="lg:hidden rounded-full border border-border/70 bg-white/80 px-4 py-2 text-sm font-semibold text-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              Counselling
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Nav Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-background pt-24 px-4 pb-6 flex flex-col h-screen overflow-y-auto"
-          >
-            <nav className="flex flex-col gap-4">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  className={`text-xl font-display font-semibold p-4 rounded-xl transition-colors ${
-                    pathname === link.path
-                      ? "bg-primary/10 text-primary"
-                      : "text-foreground hover:bg-muted"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <button
-                onClick={() => setCounsellingOpen(true)}
-                className="mt-4 w-full px-6 py-4 rounded-xl font-semibold bg-gradient-primary text-white shadow-lg"
-              >
-                Get Free Counselling
-              </button>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <main className="flex-1">
+      <main className="flex-1 pb-24 lg:pb-0">
         {children}
       </main>
+
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/70 bg-white/95 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 shadow-[0_-12px_40px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:hidden">
+        <div className="mx-auto flex max-w-screen-sm items-center gap-2 overflow-x-auto rounded-[28px] border border-border/60 bg-background/90 px-2 py-2 scrollbar-none">
+          {MOBILE_NAV_LINKS.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname === link.path;
+
+            return (
+              <Link
+                key={link.path}
+                href={link.path}
+                className={`flex min-w-[72px] flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-[11px] font-semibold transition-colors ${
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="whitespace-nowrap">{link.name}</span>
+              </Link>
+            );
+          })}
+          <button
+            onClick={() => setCounsellingOpen(true)}
+            className="flex min-w-[92px] flex-col items-center justify-center gap-1 rounded-2xl bg-foreground px-3 py-2 text-[11px] font-semibold text-background shadow-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+          >
+            <GraduationCap className="h-4 w-4" />
+            <span className="whitespace-nowrap">Counselling</span>
+          </button>
+        </div>
+      </nav>
 
       <Dialog open={counsellingOpen} onOpenChange={setCounsellingOpen}>
         <DialogContent className="flex max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] max-w-2xl flex-col rounded-[28px] border border-border/60 bg-white/95 p-0 shadow-2xl backdrop-blur-xl sm:max-h-[85vh] sm:max-w-3xl">
@@ -234,13 +267,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div>
               <h4 className="font-display font-semibold text-lg mb-4 text-white">Stay Updated</h4>
               <p className="text-muted/60 text-sm mb-4">Subscribe to our newsletter for latest admission updates.</p>
-              <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+              <form className="flex gap-2" onSubmit={handleNewsletterSubmit}>
                 <input 
                   type="email" 
                   placeholder="Email address" 
+                  value={newsletterEmail}
+                  onChange={(event) => setNewsletterEmail(event.target.value)}
                   className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-accent"
                 />
-                <button className="bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <button type="submit" className="bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                   Join
                 </button>
               </form>

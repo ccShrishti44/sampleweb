@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { CollegeCompareBar } from "@/components/colleges/college-compare-bar";
+import { CollegeQueryForm } from "@/components/colleges/college-query-form";
 import { useCollegeCompare } from "@/components/colleges/use-college-compare";
 import { getCollegeBySlug, getCourses } from "@/lib/services";
 
@@ -30,15 +31,53 @@ export default function CollegeDetail({ slug }: { slug: string }) {
       course.stream === college.category,
   ).slice(0, 3);
 
+  const categoryTone =
+    college.category === "Engineering"
+      ? {
+          badge: "bg-sky-500/15 text-sky-100 border-sky-300/20",
+          accent: "text-sky-300",
+          panel: "from-sky-500/20 to-cyan-400/10",
+        }
+      : college.category === "Medical"
+        ? {
+            badge: "bg-emerald-500/15 text-emerald-100 border-emerald-300/20",
+            accent: "text-emerald-300",
+            panel: "from-emerald-500/20 to-teal-400/10",
+          }
+        : college.category === "Management"
+          ? {
+              badge: "bg-amber-500/15 text-amber-100 border-amber-300/20",
+              accent: "text-amber-300",
+              panel: "from-amber-500/20 to-orange-400/10",
+            }
+          : college.category === "Law"
+            ? {
+                badge: "bg-rose-500/15 text-rose-100 border-rose-300/20",
+                accent: "text-rose-300",
+                panel: "from-rose-500/20 to-pink-400/10",
+              }
+            : college.category === "Design"
+              ? {
+                  badge: "bg-fuchsia-500/15 text-fuchsia-100 border-fuchsia-300/20",
+                  accent: "text-fuchsia-300",
+                  panel: "from-fuchsia-500/20 to-violet-400/10",
+                }
+              : {
+                  badge: "bg-violet-500/15 text-violet-100 border-violet-300/20",
+                  accent: "text-violet-300",
+                  panel: "from-violet-500/20 to-indigo-400/10",
+                };
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_18%,#ffffff_100%)] pb-24">
       <section className="relative overflow-hidden border-b border-border bg-slate-950 text-white">
         <img
-          src={college.image}
+          src={college.bannerImage}
           alt={college.name}
           className="absolute inset-0 h-full w-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.82),rgba(2,6,23,0.92))]" />
+        <div className={`absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.82),rgba(2,6,23,0.92))]`} />
+        <div className={`absolute inset-0 bg-gradient-to-br ${categoryTone.panel}`} />
 
         <div className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-20 md:py-24">
           <Link
@@ -52,7 +91,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
           <div className="mt-8 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
             <div>
               <div className="flex flex-wrap gap-2">
-                <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
+                <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${categoryTone.badge}`}>
                   {college.category}
                 </span>
                 <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
@@ -73,7 +112,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                   {college.location}
                 </span>
                 <span className="inline-flex items-center gap-2">
-                  <Star className="h-4 w-4 fill-accent text-accent" />
+                  <Star className={`h-4 w-4 fill-current ${categoryTone.accent}`} />
                   {college.rating} rating
                 </span>
                 <span className="inline-flex items-center gap-2">
@@ -131,7 +170,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
             ["Admission route", college.cutoff],
           ].map(([label, value]) => (
             <div key={label} className="rounded-[24px] border border-border bg-white p-5 shadow-sm">
-              <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <p className={`text-xs font-semibold uppercase tracking-[0.16em] ${college.category === "Management" ? "text-amber-600" : college.category === "Medical" ? "text-emerald-600" : college.category === "Law" ? "text-rose-600" : college.category === "Design" ? "text-fuchsia-600" : college.category === "Science" ? "text-violet-600" : "text-sky-600"}`}>
                 {label}
               </p>
               <p className="mt-2 text-sm font-semibold leading-6 text-foreground">
@@ -168,7 +207,7 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                     className="rounded-2xl border border-border bg-slate-50 p-4"
                   >
                     <div className="flex items-start gap-3">
-                      <BadgeCheck className="mt-1 h-5 w-5 shrink-0 text-accent" />
+                      <BadgeCheck className={`mt-1 h-5 w-5 shrink-0 ${college.category === "Management" ? "text-amber-500" : college.category === "Medical" ? "text-emerald-500" : college.category === "Law" ? "text-rose-500" : college.category === "Design" ? "text-fuchsia-500" : college.category === "Science" ? "text-violet-500" : "text-sky-500"}`} />
                       <p className="text-sm leading-6 text-foreground">{highlight}</p>
                     </div>
                   </div>
@@ -265,6 +304,64 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                 </p>
               </div>
             </div>
+
+            <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Campus gallery and experience
+              </p>
+              <h2 className="mt-2 text-3xl font-display font-bold text-foreground">
+                Real study and campus moments
+              </h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {college.experienceGallery.slice(0, 6).map((image) => (
+                  <figure
+                    key={image.src}
+                    className="overflow-hidden rounded-[24px] border border-border bg-slate-50"
+                  >
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="h-52 w-full object-cover"
+                    />
+                    <figcaption className="p-4 text-sm leading-6 text-muted-foreground">
+                      {image.caption}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Student and alumni voices
+              </p>
+              <h2 className="mt-2 text-3xl font-display font-bold text-foreground">
+                What the outcome can look like
+              </h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {college.studentVoices.map((voice) => (
+                  <article key={voice.name} className="rounded-[24px] border border-border bg-slate-50 p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-lg font-display font-bold text-foreground">{voice.name}</p>
+                        <p className="mt-1 text-sm font-medium text-muted-foreground">
+                          {voice.programme}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-foreground ring-1 ring-border">
+                        {voice.package}
+                      </span>
+                    </div>
+                    <p className="mt-4 text-sm font-semibold text-foreground">
+                      {voice.role}
+                    </p>
+                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                      “{voice.quote}”
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="space-y-8">
@@ -325,6 +422,8 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                 ))}
               </div>
             </div>
+
+            <CollegeQueryForm collegeName={college.name} />
           </div>
         </div>
       </section>

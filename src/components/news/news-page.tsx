@@ -44,7 +44,7 @@ export default function News() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Link
               href={`/news/${featuredArticle.slug}`}
-              className="relative block rounded-3xl overflow-hidden mb-16 h-[400px] md:h-[500px] group"
+              className="relative block rounded-3xl overflow-hidden mb-12 md:mb-16 h-[320px] sm:h-[400px] md:h-[500px] group"
             >
               <img
                 src={featuredArticle.image}
@@ -52,11 +52,11 @@ export default function News() {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent flex items-end">
-                <div className="p-8 md:p-12 max-w-3xl text-white">
-                  <span className="bg-accent text-white text-xs font-bold px-3 py-1 rounded-full mb-4 inline-block">
+                <div className="p-6 md:p-12 max-w-3xl text-white">
+                  <span className="bg-accent text-white text-xs font-bold px-3 py-1 rounded-full mb-3 md:mb-4 inline-block">
                     Featured
                   </span>
-                  <h2 className="text-3xl md:text-5xl font-display font-bold leading-tight mb-4">
+                  <h2 className="text-2xl sm:text-3xl md:text-5xl font-display font-bold leading-tight mb-3 md:mb-4">
                     {featuredArticle.title}
                   </h2>
                   <p className="max-w-2xl text-sm md:text-base text-white/80 mb-4">
@@ -101,7 +101,7 @@ export default function News() {
               className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all group flex flex-col"
             >
               <Link href={`/news/${article.slug}`} className="flex h-full flex-col">
-                <div className="h-48 overflow-hidden relative">
+                <div className="h-44 md:h-48 overflow-hidden relative">
                   <img
                     src={article.image}
                     alt={article.title}
@@ -113,7 +113,7 @@ export default function News() {
                     </span>
                   </div>
                 </div>
-                <div className="p-6 flex-1 flex flex-col">
+                <div className="p-5 md:p-6 flex-1 flex flex-col">
                   <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1">
                     <Clock className="w-3 h-3" /> {article.date} · {article.readTime}
                   </p>
