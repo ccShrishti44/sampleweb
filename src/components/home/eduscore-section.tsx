@@ -203,23 +203,25 @@ export function EduScoreSection() {
 
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {shortlist.map((item) => (
-                  <Link
-                    key={item.college.slug}
-                    href={`/colleges/${item.college.slug}`}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:border-white/25"
-                  >
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/50">
-                      {item.overallScore}% match
-                    </p>
-                    <p className="mt-2 text-sm font-semibold leading-6 text-white">
-                      {item.college.shortName}
-                    </p>
-                    <p className="mt-2 text-xs text-white/65">
-                      Target: {item.benchmark.targetScore} {activeExam.unit}
-                    </p>
-                  </Link>
+                  item && (
+                    <Link
+                      key={item.college.slug}
+                      href={`/colleges/${item.college.slug}`}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:border-white/25"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/50">
+                        {item.overallScore}% match
+                      </p>
+                      <p className="mt-2 text-sm font-semibold leading-6 text-white">
+                        {item.college.shortName}
+                      </p>
+                      <p className="mt-2 text-xs text-white/65">
+                        Target: {item.benchmark.targetScore} {activeExam.unit}
+                      </p>
+                    </Link>
+                  )
                 ))}
-              </div>
+                              </div>
 
               <div className="mt-8 flex items-center justify-between border-t border-gray-800 pt-6">
                 <span className="text-sm text-gray-400">
