@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Target } from "lucide-react";
 
-import { getEduScoreResults, EDUSCORE_EXAMS_BY_STREAM, type EduScoreExamType } from "@/lib/eduscore";
-import type { Stream } from "@/lib/types/content";
+import { getEduScoreResults, EDUSCORE_EXAMS_BY_STREAM, type EduScoreExamType, EduScoreBenchmark } from "@/lib/eduscore";
+import type { CollegeProfile, Stream } from "@/lib/types/content";
 
 const STREAMS: Stream[] = [
   "Engineering",
@@ -22,6 +22,15 @@ function fitLabel(score: number) {
   if (score >= 58) return "Developing";
   return "Stretch";
 }
+
+type EduScoreResult = {
+  college: CollegeProfile;
+  overallScore: number;
+  academicFit: number;
+  affordabilityFit: number;
+  outcomeStrength: number;
+  benchmark: EduScoreBenchmark;
+};
 
 export function EduScoreSection() {
   const [stream, setStream] = useState<Stream>("Engineering");
