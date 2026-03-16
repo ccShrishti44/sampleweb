@@ -30,8 +30,13 @@ export interface EduScoreBenchmark {
   affordabilityLpa: number;
 }
 
+
+type CollegeL = Pick<
+  College,
+  "name" | "slug" | "fees"
+>;
 export interface EduScoreResult {
-  college: College;
+  college: CollegeL;
   overallScore: number;
   academicFit: number;
   affordabilityFit: number;
@@ -138,16 +143,20 @@ export function getEduScoreResults({
     (item) => item.stream === stream && item.examType === examType,
   );
 
-  const results: EduScoreResult[] = benchmarks
+  const results = benchmarks
     .map((benchmark) => {
       const college = getCollegeBySlug(benchmark.collegeSlug);
       if (!college) return null;
 
       const academicFit = academicScore(score, benchmark, exam);
-      const affordabilityFit = affordabilityScore(budgetLpa, parseAnnualFeeLpa(college.fees));
+      const affordabilityFit = affordabilityScore(
+        budgetLpa,
+        parseAnnualFeeLpa(college.fees)
+      );
       const outcomes = outcomeStrength(college);
+
       const overallScore = Math.round(
-        academicFit * 0.6 + affordabilityFit * 0.2 + outcomes * 0.2,
+        academicFit * 0.6 + affordabilityFit * 0.2 + outcomes * 0.2
       );
 
       return {
@@ -159,7 +168,7 @@ export function getEduScoreResults({
         outcomeStrength: Math.round(outcomes),
       };
     })
-    .filter((item): item is EduScoreResult => Boolean(item))
+    .filter((item): item is EduScoreResult => item !== null)
     .sort((a, b) => b.overallScore - a.overallScore);
 
   return results;
