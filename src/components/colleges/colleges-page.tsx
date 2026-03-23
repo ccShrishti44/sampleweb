@@ -208,6 +208,8 @@ export default function Colleges({
                       <Image
                         src={college.image}
                         alt={college.name}
+                        fill
+                        sizes="(max-width: 1279px) 100vw, 180px"
                         className="h-full w-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/10 to-transparent" />

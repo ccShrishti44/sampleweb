@@ -75,6 +75,8 @@ export default function CollegeDetail({ slug }: { slug: string }) {
         <Image
           src={college.bannerImage}
           alt={college.name}
+          fill
+          sizes="100vw"
           className="absolute inset-0 h-full w-full object-cover opacity-20"
         />
         <div className={`absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.82),rgba(2,6,23,0.92))]`} />
@@ -319,11 +321,15 @@ export default function CollegeDetail({ slug }: { slug: string }) {
                     key={image.src}
                     className="overflow-hidden rounded-[24px] border border-border bg-slate-50"
                   >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      className="h-52 w-full object-cover"
-                    />
+                    <div className="relative h-52 w-full">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
                     <figcaption className="p-4 text-sm leading-6 text-muted-foreground">
                       {image.caption}
                     </figcaption>

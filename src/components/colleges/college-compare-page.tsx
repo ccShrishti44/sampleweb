@@ -105,6 +105,8 @@ export default function CollegeComparePage({
                 <Image
                   src={college.image}
                   alt={college.name}
+                  fill
+                  sizes="(max-width: 1279px) 100vw, 220px"
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />

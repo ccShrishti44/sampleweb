@@ -4,10 +4,10 @@ import Image from "next/image";
 import React, { useState, useEffect, useRef } from 'react';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import {
   Search, MapPin, BookOpen, Building2, Award,
-  ArrowRight, CheckCircle2, Star, Calendar, Sparkles,
+  ArrowRight, Star, Calendar,
 } from 'lucide-react';
 import {
   getColleges,
@@ -16,6 +16,7 @@ import {
   getStreamPages,
 } from "@/lib/services";
 import { EduScoreSection } from "@/components/home/eduscore-section";
+import { CollegeMatchFinder } from "@/components/home/college-match-finder";
 import Waves from '@/components/ui/waves-background';
 
 const COLLEGES = getColleges();
@@ -46,431 +47,6 @@ function StatCounter({ to, suffix = '', prefix = '' }: { to: number; suffix?: st
 }
 
 /* ─── College Match Finder ─── */
-type MatchStep = 'cta' | 'register' | 'prefs' | 'matching' | 'result';
-
-function CollegeMatchFinder() {
-  const [step, setStep] = useState<MatchStep>('cta');
-  const [regForm, setRegForm] = useState({ name: '', email: '', phone: '' });
-  const [prefs, setPrefs] = useState({ stream: '', city: '', budget: '5', exam: '' });
-  const [animIdx, setAnimIdx] = useState(0);
-  const [matched, setMatched] = useState<typeof COLLEGES[0] | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function findBestMatch() {
-    const filtered = prefs.stream
-      ? COLLEGES.filter(c => c.category.toLowerCase().includes(prefs.stream.toLowerCase()))
-      : COLLEGES;
-    return (filtered.length ? filtered : COLLEGES).sort((a, b) => b.rating - a.rating)[0];
-  }
-
-  function startMatching() {
-    const best = findBestMatch();
-    const targetIdx = COLLEGES.indexOf(best);
-    setStep('matching');
-
-    const totalCards = COLLEGES.length;
-    const fastCycles = 3;
-    const totalFastSteps = totalCards * fastCycles;
-    let i = 0;
-    let delay = 72;
-
-    function tick() {
-      setAnimIdx(i % totalCards);
-      i++;
-
-      if (i > totalFastSteps) {
-        const remaining = ((targetIdx - (i % totalCards) + totalCards) % totalCards);
-        if (remaining === 0) {
-          setAnimIdx(targetIdx);
-          setMatched(best);
-          setTimeout(() => setStep('result'), 750);
-          return;
-        }
-        delay = Math.min(delay * 1.32, 550);
-      } else {
-        delay = Math.max(delay * 0.985, 65);
-      }
-      timerRef.current = setTimeout(tick, delay);
-    }
-    tick();
-  }
-
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
-
-  function reset() {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setStep('cta');
-    setRegForm({ name: '', email: '', phone: '' });
-    setPrefs({ stream: '', city: '', budget: '5', exam: '' });
-    setMatched(null);
-    setAnimIdx(0);
-  }
-
-  const currentAnimCollege = COLLEGES[animIdx];
-
-  return (
-    <section className="py-28 relative overflow-hidden bg-gradient-to-b from-indigo-50/40 via-background to-background dark:from-indigo-950/15">
-      {/* Subtle grid */}
-      <div className="absolute inset-0 opacity-[0.025] pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(hsl(243 75% 59%) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-          {/* Left — copy */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.5 }}
-            >
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-5">
-                <Sparkles className="w-3.5 h-3.5" /> AI College Matcher
-              </div>
-              <h2 className="text-4xl md:text-5xl font-display font-extrabold leading-tight mb-5">
-                Find Your<br />
-                <span className="text-shimmer">Personal Match</span>
-              </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                Answer a few quick questions and watch our matcher scan thousands of colleges in real-time — then reveal the one that&apos;s made for you.
-              </p>
-              <ul className="space-y-3 mb-8">
-                {[
-                  'Personalized to your stream, city & budget',
-                  'Powered by 10,000+ verified college profiles',
-                  'Instant match — no waiting, no spam',
-                ].map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm font-medium">
-                    <CheckCircle2 className="w-5 h-5 text-accent shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTA preview stack — shown only on step=cta */}
-              <AnimatePresence>
-                {step === 'cta' && (
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="relative h-36 w-full max-w-xs"
-                  >
-                    {COLLEGES.slice(0, 4).map((c, i) => (
-                      <div key={c.id}
-                        className="absolute rounded-2xl overflow-hidden border border-border/60 shadow-lg bg-card"
-                        style={{
-                          width: `${240 - i * 16}px`,
-                          height: `${110 - i * 6}px`,
-                          transform: `translateY(${i * 10}px) translateX(${i * 6}px) scale(${1 - i * 0.03})`,
-                          zIndex: 4 - i,
-                          opacity: 1 - i * 0.18,
-                        }}
-                      >
-                        <Image src={c.image} alt={c.name} className="w-full h-full object-cover" width={240} height={110} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                        <div className="absolute bottom-2.5 left-3 text-white">
-                          <p className="font-bold text-sm leading-tight">{c.name}</p>
-                          <p className="text-[10px] opacity-75 mt-0.5">★ {c.rating}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-
-          {/* Right — interactive widget */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.55, delay: 0.1 }}
-          >
-            <AnimatePresence mode="wait">
-
-              {/* STEP: CTA */}
-              {step === 'cta' && (
-                <motion.div key="cta"
-                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-                  className="bg-card border border-border rounded-3xl p-8 shadow-xl text-center"
-                >
-                  <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-primary/25">
-                    <Sparkles className="w-9 h-9 text-white" />
-                  </div>
-                  <h3 className="font-display font-bold text-2xl mb-3">Ready to meet your match?</h3>
-                  <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                    Takes 60 seconds. We&apos;ll scan our entire database and surface the college that fits you best.
-                  </p>
-                  <button
-                    onClick={() => setStep('register')}
-                    className="w-full bg-gradient-primary text-white py-4 rounded-2xl font-bold text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 hover:-translate-y-0.5 transition-all"
-                  >
-                    Start My Match →
-                  </button>
-                  <p className="text-xs text-muted-foreground mt-4">Free · No spam · Instant results</p>
-                </motion.div>
-              )}
-
-              {/* STEP: REGISTER */}
-              {step === 'register' && (
-                <motion.div key="register"
-                  initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
-                  className="bg-card border border-border rounded-3xl p-8 shadow-xl"
-                >
-                  <div className="flex items-center gap-3 mb-7">
-                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">1</div>
-                    <div>
-                      <h3 className="font-display font-bold text-lg leading-tight">Create Your Profile</h3>
-                      <p className="text-xs text-muted-foreground">Step 1 of 2</p>
-                    </div>
-                    <div className="ml-auto flex gap-1">
-                      {[1, 2].map(n => <div key={n} className={`h-1.5 w-8 rounded-full ${n === 1 ? 'bg-primary' : 'bg-border'}`} />)}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    {[
-                      { key: 'name', label: 'Full Name', type: 'text', placeholder: 'Arjun Sharma' },
-                      { key: 'email', label: 'Email Address', type: 'email', placeholder: 'arjun@example.com' },
-                      { key: 'phone', label: 'Phone Number', type: 'tel', placeholder: '+91 98765 43210' },
-                    ].map(({ key, label, type, placeholder }) => (
-                      <div key={key}>
-                        <label className="block text-sm font-semibold mb-1.5 text-foreground">{label}</label>
-                        <input
-                          type={type} placeholder={placeholder}
-                          value={regForm[key as keyof typeof regForm]}
-                          onChange={e => setRegForm(p => ({ ...p, [key]: e.target.value }))}
-                          className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground"
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex gap-3 mt-7">
-                    <button onClick={reset} className="px-5 py-3 border border-border rounded-xl text-sm font-semibold hover:bg-muted transition-colors">
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => regForm.name && regForm.email ? setStep('prefs') : null}
-                      disabled={!regForm.name || !regForm.email}
-                      className="flex-1 bg-gradient-primary text-white py-3 rounded-xl font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-lg hover:-translate-y-0.5 transition-all"
-                    >
-                      Continue →
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP: PREFS */}
-              {step === 'prefs' && (
-                <motion.div key="prefs"
-                  initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
-                  className="bg-card border border-border rounded-3xl p-8 shadow-xl"
-                >
-                  <div className="flex items-center gap-3 mb-7">
-                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">2</div>
-                    <div>
-                      <h3 className="font-display font-bold text-lg leading-tight">Your Preferences</h3>
-                      <p className="text-xs text-muted-foreground">Step 2 of 2</p>
-                    </div>
-                    <div className="ml-auto flex gap-1">
-                      {[1, 2].map(n => <div key={n} className="h-1.5 w-8 rounded-full bg-primary" />)}
-                    </div>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-semibold mb-1.5">Preferred Stream</label>
-                      <select value={prefs.stream} onChange={e => setPrefs(p => ({ ...p, stream: e.target.value }))}
-                        className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                        <option value="">Any Stream</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="Medical">Medical / MBBS</option>
-                        <option value="Management">Management / MBA</option>
-                        <option value="Law">Law</option>
-                        <option value="Arts">Arts / Science</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold mb-1.5">Preferred City</label>
-                      <select value={prefs.city} onChange={e => setPrefs(p => ({ ...p, city: e.target.value }))}
-                        className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                        <option value="">Any City</option>
-                        <option value="Delhi">Delhi / NCR</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Pune">Pune</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold mb-2">
-                        Annual Budget: <span className="text-primary font-bold">₹{parseInt(prefs.budget) < 10 ? prefs.budget + 'L' : '10L+'}/yr</span>
-                      </label>
-                      <input type="range" min="1" max="10" step="1"
-                        value={prefs.budget} onChange={e => setPrefs(p => ({ ...p, budget: e.target.value }))}
-                        className="w-full accent-primary cursor-pointer" />
-                      <div className="flex justify-between text-xs text-muted-foreground mt-1"><span>₹1L</span><span>₹10L+</span></div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold mb-1.5">Entrance Exam</label>
-                      <select value={prefs.exam} onChange={e => setPrefs(p => ({ ...p, exam: e.target.value }))}
-                        className="w-full bg-muted/40 border border-border rounded-xl px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                        <option value="">Not sure / Any</option>
-                        <option value="JEE">JEE Main / Advanced</option>
-                        <option value="NEET">NEET</option>
-                        <option value="CAT">CAT / MAT</option>
-                        <option value="CLAT">CLAT</option>
-                        <option value="CUET">CUET</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 mt-7">
-                    <button onClick={() => setStep('register')} className="px-5 py-3 border border-border rounded-xl text-sm font-semibold hover:bg-muted transition-colors">
-                      ← Back
-                    </button>
-                    <button onClick={startMatching}
-                      className="flex-1 bg-gradient-primary text-white py-3 rounded-xl font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                      🔍 Find My Match
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP: MATCHING ANIMATION */}
-              {step === 'matching' && (
-                <motion.div key="matching"
-                  initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
-                  className="flex flex-col items-center"
-                >
-                  <motion.p
-                    animate={{ opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 1.5 }}
-                    className="text-sm font-semibold text-muted-foreground mb-5 text-center"
-                  >
-                    🔍 Scanning 10,000+ colleges for <span className="text-foreground">{regForm.name || 'you'}</span>...
-                  </motion.p>
-
-                  {/* Card viewport — slot machine */}
-                  <div className="relative w-[340px] h-[210px] rounded-2xl overflow-hidden shadow-2xl border border-border ring-4 ring-primary/10">
-                    <AnimatePresence mode="popLayout">
-                      <motion.div key={animIdx}
-                        initial={{ y: -220, opacity: 0, scale: 0.88 }}
-                        animate={{ y: 0, opacity: 1, scale: 1 }}
-                        exit={{ y: 220, opacity: 0, scale: 0.88 }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 32 }}
-                        className="absolute inset-0"
-                      >
-                        <Image src={currentAnimCollege.image} alt={currentAnimCollege.name} className="w-full h-full object-cover" width={240} height={110} />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                          <p className="font-display font-extrabold text-xl leading-tight">{currentAnimCollege.name}</p>
-                          <p className="text-xs opacity-75 mt-0.5 flex items-center gap-1">
-                            <MapPin className="w-3 h-3" /> {currentAnimCollege.city} · {currentAnimCollege.category}
-                          </p>
-                          <p className="text-accent font-bold text-sm mt-1.5">★ {currentAnimCollege.rating}</p>
-                        </div>
-                        {/* Scan shimmer overlay */}
-                        <div className="absolute inset-0 pointer-events-none"
-                          style={{ background: 'linear-gradient(180deg, transparent 0%, hsl(243 75% 59% / 0.09) 50%, transparent 100%)' }} />
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Progress dots */}
-                  <div className="flex gap-1.5 mt-5">
-                    {COLLEGES.map((_, i) => (
-                      <motion.div key={i}
-                        animate={{ width: i === animIdx ? 24 : 8, backgroundColor: i === animIdx ? 'hsl(243 75% 59%)' : 'hsl(214 32% 91%)' }}
-                        transition={{ duration: 0.15 }}
-                        className="h-1.5 rounded-full"
-                      />
-                    ))}
-                  </div>
-
-                  <p className="text-xs text-muted-foreground mt-4">Analyzing fit across 40+ parameters…</p>
-                </motion.div>
-              )}
-
-              {/* STEP: RESULT */}
-              {step === 'result' && matched && (
-                <motion.div key="result"
-                  initial={{ opacity: 0, scale: 0.82, y: 24 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ type: 'spring', stiffness: 180, damping: 20 }}
-                >
-                  <motion.div className="text-center mb-5"
-                    initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full font-bold text-sm border border-emerald-200 shadow-sm">
-                      🎉 Perfect Match Found for {regForm.name || 'You'}!
-                    </span>
-                  </motion.div>
-
-                  <div className="bg-card border-2 border-primary/25 rounded-3xl overflow-hidden shadow-2xl shadow-primary/10">
-                    <div className="relative h-52 overflow-hidden">
-                      <Image src={matched.image} alt={matched.name} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                      <div className="absolute top-4 left-4 flex gap-2">
-                        <span className="bg-white/90 backdrop-blur text-black text-xs font-bold px-3 py-1 rounded-full">{matched.rank}</span>
-                      </div>
-                      <div className="absolute top-4 right-4">
-                        <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow">#1 Match</span>
-                      </div>
-                      <div className="absolute bottom-4 left-4 text-white">
-                        <h3 className="font-display font-extrabold text-2xl leading-tight">{matched.name}</h3>
-                        <p className="text-sm opacity-80 flex items-center gap-1 mt-1"><MapPin className="w-3.5 h-3.5" /> {matched.city}</p>
-                      </div>
-                      <div className="absolute bottom-4 right-4">
-                        <div className="bg-black/30 backdrop-blur-sm border border-white/20 rounded-xl px-3 py-2 text-white text-center">
-                          <p className="text-xl font-bold text-accent">★ {matched.rating}</p>
-                          <p className="text-[10px] opacity-70 mt-0.5">Rating</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-6">
-                      <div className="grid grid-cols-3 gap-3 mb-5">
-                        {[
-                          { label: 'Stream', val: matched.category.split('/')[0] },
-                          { label: 'Avg Fees', val: matched.fees },
-                          { label: 'Exam', val: matched.cutoff.split(' ')[0] },
-                        ].map(({ label, val }) => (
-                          <div key={label} className="bg-muted/50 rounded-xl p-3 text-center border border-border/50">
-                            <p className="text-[10px] text-muted-foreground mb-1 uppercase tracking-wide">{label}</p>
-                            <p className="font-semibold text-xs text-foreground">{val}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 mb-5">
-                        <p className="text-sm text-foreground leading-relaxed">
-                          <span className="font-bold text-primary">Why this match?</span>{' '}
-                          Based on your{prefs.stream ? ` preference for ${prefs.stream}` : ' profile'},{' '}
-                          <strong>{matched.name}</strong> ranks highest across academics, placements, and student satisfaction in our database.
-                        </p>
-                      </div>
-
-                      <div className="flex gap-3">
-                        <Link href="/colleges"
-                          className="flex-1 bg-gradient-primary text-white py-3 rounded-xl font-bold text-center hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-sm">
-                          View College Profile <ArrowRight className="w-4 h-4" />
-                        </Link>
-                        <button onClick={reset}
-                          className="px-5 py-3 border-2 border-border rounded-xl font-semibold hover:bg-muted transition-colors text-sm">
-                          Try Again
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Stream Focus Scroller ─── */
 const STREAMS = getStreamPages().map((streamPage) => ({
   slug: streamPage.slug,
   name: streamPage.name,
@@ -532,6 +108,8 @@ function StreamFocusScroller() {
                 <Image
                   src={stream.image}
                   alt={stream.name}
+                  fill
+                  sizes="(max-width: 640px) 200px, 260px"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 transition-opacity duration-500 group-hover:opacity-100 opacity-80" />
@@ -704,7 +282,13 @@ export default function Home() {
                 className="min-w-[280px] max-w-[280px] md:min-w-[320px] md:max-w-[320px] snap-center bg-card rounded-3xl overflow-hidden border border-border shadow-md hover:shadow-2xl transition-all group">
                 <div className="relative h-44 md:h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
-                  <Image src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" width={240} height={110} />
+                  <Image
+                    src={college.image}
+                    alt={college.name}
+                    fill
+                    sizes="(max-width: 767px) 280px, 320px"
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
                   <div className="absolute top-4 left-4 z-20">
                     <span className="bg-white text-black text-xs font-bold px-3 py-1 rounded-full">{college.rank}</span>
                   </div>
@@ -812,8 +396,14 @@ export default function Home() {
               {NEWS.slice(0, 3).map(article => (
                 <div key={article.id} className="group">
                   <Link href={`/news/${article.slug}`} className="flex gap-4">
-                    <div className="w-24 h-20 md:w-32 md:h-24 rounded-xl overflow-hidden flex-shrink-0">
-                      <Image src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" width={48} height={40} />
+                    <div className="relative h-20 w-24 md:h-24 md:w-32 rounded-xl overflow-hidden flex-shrink-0">
+                      <Image
+                        src={article.image}
+                        alt={article.title}
+                        fill
+                        sizes="(max-width: 767px) 96px, 128px"
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
                     </div>
                     <div>
                     <span className="text-xs font-bold text-accent mb-1 block">{article.category}</span>

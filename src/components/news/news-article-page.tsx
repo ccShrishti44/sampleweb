@@ -34,6 +34,8 @@ export default function NewsArticleDetail({ slug }: { slug: string }) {
         <Image
           src={article.image}
           alt={article.title}
+          width={1200}
+          height={352}
           className="h-44 w-full rounded-[28px] object-cover shadow-lg"
         />
       </PageHero>

@@ -215,8 +215,14 @@ export default function CourseDetailPage({ slug }: { slug: string }) {
                 {featuredColleges.map((college) => (
                   <Link key={college.slug} href={`/colleges/${college.slug}`} className="block group">
                     <div className="flex gap-3">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-border">
-                        <Image src={college.image} alt={college.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                      <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-border shrink-0">
+                        <Image
+                          src={college.image}
+                          alt={college.name}
+                          fill
+                          sizes="48px"
+                          className="object-cover group-hover:scale-110 transition-transform"
+                        />
                       </div>
                       <div>
                         <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">{college.name}</h4>
